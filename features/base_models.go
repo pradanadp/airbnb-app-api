@@ -31,24 +31,24 @@ type Homestay struct {
 	Location    string    `gorm:"column:location;not null"`
 	Price       float64   `gorm:"column:price;not null"`
 	Facilities  string    `gorm:"column:facilities;not null"`
-	Images      string    `gorm:"column:images_link;not null"`
+	Images      []string  `gorm:"column:images_links;not null"`
 	Bookings    []Booking `gorm:"foreignKey:HomestayID"`
 	Reviews     []Review  `gorm:"foreignKey:HomestayID"`
 }
 
 type Booking struct {
 	gorm.Model
-	CustomerID     uint     `gorm:"column:customer_id;not null"`
-	Customer       User     `gorm:"foreignKey:CustomerID"`
-	HomestayID     uint     `gorm:"column:homestay_id;not null"`
-	Homestay       Homestay `gorm:"foreignKey:HomestayID"`
-	PaymentID      uint     `gorm:"column:payment_id;not null"`
-	Payment        Payment  `gorm:"foreignKey:PaymentID"`
-	CheckInDate    string   `gorm:"column:check_in_date;not null"`
-	CheckOutdate   string   `gorm:"column:check_out_date;not null"`
-	Status         string   `gorm:"type:enum('available','reserved','booked');default:'available';column:booking_status;not null"`
-	NumberOfNights uint     `gorm:"column:number_of_nights;not null"`
-	TotalPrice     float64  `gorm:"column:total_price;not null"`
+	CustomerID   uint     `gorm:"column:customer_id;not null"`
+	Customer     User     `gorm:"foreignKey:CustomerID"`
+	HomestayID   uint     `gorm:"column:homestay_id;not null"`
+	Homestay     Homestay `gorm:"foreignKey:HomestayID"`
+	PaymentID    uint     `gorm:"column:payment_id;not null"`
+	Payment      Payment  `gorm:"foreignKey:PaymentID"`
+	CheckInDate  string   `gorm:"column:check_in_date;not null"`
+	CheckOutdate string   `gorm:"column:check_out_date;not null"`
+	Status       string   `gorm:"type:enum('available','reserved','booked');default:'available';column:booking_status;not null"`
+	Duration     uint     `gorm:"column:duration;not null"`
+	TotalPrice   float64  `gorm:"column:total_price;not null"`
 }
 
 type Review struct {
