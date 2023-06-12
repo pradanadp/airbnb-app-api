@@ -69,3 +69,13 @@ func (handler *UserController) AddUser(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, utils.SuccessWhitoutResponse("successfully"))
 }
+
+func (handler *UserController) GetUser(c echo.Context) error {
+	id := middlewares.ExtracTokenUserId(c)
+	user, err := handler.userService.GetUser(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("data tidak tersedia ", nil))
+	}
+	mapUser := EntityToResponse(user)
+	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser))
+}
