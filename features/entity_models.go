@@ -63,9 +63,9 @@ type BookingEntity struct {
 	HomestayID   uint           `json:"homestay_id,omitempty" form:"homestay_id"`
 	Homestay     HomestayEntity `json:"homestay,omitempty"`
 	CheckInDate  string         `json:"check_in_date,omitempty" form:"check_in_date"`
-	CheckOutdate string         `json:"check_out_date,omitempty" form:"check_out_date"`
+	CheckOutDate string         `json:"check_out_date,omitempty" form:"check_out_date"`
 	Status       string         `json:"booking_status,omitempty" form:"booking_status"`
-	Duration     uint           `json:"duration,omitempty"`
+	Duration     uint           `json:"duration,omitempty" form:"duration"`
 	TotalPrice   float64        `json:"total_price,omitempty" form:"total_price"`
 	CreatedAt    time.Time      `json:"created_at,omitempty"`
 	UpdatedAt    time.Time      `json:"updated_at,omitempty"`

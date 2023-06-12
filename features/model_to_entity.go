@@ -96,7 +96,7 @@ func BookingModelToEntity(booking Booking) BookingEntity {
 		HomestayID:   booking.HomestayID,
 		Homestay:     HomestayModelToEntity(booking.Homestay),
 		CheckInDate:  booking.CheckInDate,
-		CheckOutdate: booking.CheckOutdate,
+		CheckOutDate: booking.CheckOutDate,
 		Status:       booking.Status,
 		Duration:     booking.Duration,
 		TotalPrice:   booking.TotalPrice,

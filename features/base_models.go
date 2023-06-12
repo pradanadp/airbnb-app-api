@@ -52,8 +52,8 @@ type Booking struct {
 	HomestayID   uint     `gorm:"column:homestay_id;not null"`
 	Homestay     Homestay `gorm:"foreignKey:HomestayID"`
 	CheckInDate  string   `gorm:"column:check_in_date;not null"`
-	CheckOutdate string   `gorm:"column:check_out_date;not null"`
-	Status       string   `gorm:"type:enum('available','reserved','booked');default:'available';column:booking_status;not null"`
+	CheckOutDate string   `gorm:"column:check_out_date;not null"`
+	Status       string   `gorm:"type:enum('reserved','booked');column:booking_status;not null"`
 	Duration     uint     `gorm:"column:duration;not null"`
 	TotalPrice   float64  `gorm:"column:total_price;not null"`
 }
@@ -70,7 +70,7 @@ type Review struct {
 
 type Payment struct {
 	gorm.Model
-	BookingID uint    `gorm:"column:payment_id;not null"`
+	BookingID uint    `gorm:"column:booking_id;not null"`
 	Booking   Booking `gorm:"foreignKey:BookingID"`
 	Name      string  `gorm:"column:payment_name;not null"`
 	Status    string  `gorm:"column:payment_status;not null"`

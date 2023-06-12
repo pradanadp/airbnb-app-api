@@ -2,6 +2,9 @@ package router
 
 import (
 	"be-api/app/middlewares"
+	bookingControllerInit "be-api/features/booking/controller"
+	bookingRepoInit "be-api/features/booking/data"
+	bookingServiceInit "be-api/features/booking/service"
 	homestayControllerInit "be-api/features/homestay/controller"
 	homestayRepoInit "be-api/features/homestay/data"
 	homestayServiceInit "be-api/features/homestay/service"
@@ -31,6 +34,16 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 		homestaysGroup.GET("/:homestay_id", homestayControllerAPI.ReadHomestay)
 		homestaysGroup.PUT("/:homestay_id", homestayControllerAPI.UpdateHomestay)
 		homestaysGroup.DELETE("/:homestay_id", homestayControllerAPI.DeleteHomestay)
+	}
+
+	// Booking router
+	bookingRepo := bookingRepoInit.New(db)
+	bookingService := bookingServiceInit.New(bookingRepo)
+	bookingControllerAPI := bookingControllerInit.New(bookingService)
+
+	bookingsGroup := e.Group("/bookings")
+	{
+		bookingsGroup.POST("", bookingControllerAPI.CreateBooking)
 	}
 
 	//User Router

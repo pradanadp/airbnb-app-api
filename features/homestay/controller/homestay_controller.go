@@ -25,7 +25,7 @@ func (hc *homestayController) CreateHomestay(c echo.Context) error {
 	var homestay models.HomestayEntity
 	err := c.Bind(&homestay)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, utils.FailResponse("failed to bind mentee data", nil))
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("failed to bind homestay data", nil))
 	}
 
 	homestayID, err := hc.homestayService.CreateHomestay(homestay)
