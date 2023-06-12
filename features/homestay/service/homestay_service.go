@@ -26,7 +26,7 @@ func (hs *homestayService) CreateHomestay(homestay models.HomestayEntity) (uint,
 		return 0, errors.New("error, price is required")
 	case homestay.Facilities == "":
 		return 0, errors.New("error, facilities is required")
-	case homestay.Images == nil:
+	case homestay.Images == "":
 		return 0, errors.New("error, image links are required")
 	}
 

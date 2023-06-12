@@ -36,7 +36,7 @@ type HomestayEntity struct {
 	Location    string          `json:"location,omitempty" form:"location"`
 	Price       float64         `json:"price,omitempty" form:"price"`
 	Facilities  string          `json:"facilities,omitempty" form:"facilities"`
-	Images      []string        `json:"images_links,omitempty" form:"images_links"`
+	Images      string          `json:"images_links,omitempty" form:"images_links"`
 	CreatedAt   time.Time       `json:"created_at,omitempty"`
 	UpdatedAt   time.Time       `json:"updated_at,omitempty"`
 	DeletedAt   time.Time       `json:"deleted_at,omitempty"`

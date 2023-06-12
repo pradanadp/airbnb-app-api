@@ -42,7 +42,7 @@ func (hq *homestayQuery) Insert(homestay models.HomestayEntity) (uint, error) {
 func (hq *homestayQuery) Select(homestayID uint) (models.HomestayEntity, error) {
 	var homestay models.Homestay
 
-	queryResult := hq.db.Preload("Feedbacks").First(&homestay, homestayID)
+	queryResult := hq.db.Preload("Bookings").Preload("Reviews").First(&homestay, homestayID)
 	if queryResult.Error != nil {
 		return models.HomestayEntity{}, queryResult.Error
 	}
@@ -56,7 +56,7 @@ func (hq *homestayQuery) Select(homestayID uint) (models.HomestayEntity, error) 
 func (hq *homestayQuery) SelectAll() ([]models.HomestayEntity, error) {
 	var homestays []models.Homestay
 
-	queryResult := hq.db.Preload("Feedbacks").Find(&homestays)
+	queryResult := hq.db.Preload("Bookings").Preload("Reviews").Find(&homestays)
 	if queryResult.Error != nil {
 		return []models.HomestayEntity{}, queryResult.Error
 	}
