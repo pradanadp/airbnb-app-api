@@ -11,12 +11,13 @@ type HomestayResponse struct {
 	Location    string           `json:"location,omitempty"`
 	Price       float64          `json:"price,omitempty"`
 	Facilities  string           `json:"facilities,omitempty"`
+	Rating      float64          `json:"rating"`
 	Images      string           `json:"image_links,omitempty"`
 	Reviews     []ReviewResponse `json:"reviews,omitempty"`
 }
 
 type ReviewResponse struct {
-	Ratings uint `json:"ratings,omitempty"`
+	Ratings float64 `json:"ratings,omitempty"`
 }
 
 func HomestayEntityToResponse(homestay models.HomestayEntity) HomestayResponse {
@@ -32,7 +33,8 @@ func HomestayEntityToResponse(homestay models.HomestayEntity) HomestayResponse {
 		Location:    homestay.Location,
 		Price:       homestay.Price,
 		Facilities:  homestay.Facilities,
-		Reviews:     reviews,
+		Rating:      homestay.Rating,
+		// Reviews:     reviews,
 	}
 }
 
