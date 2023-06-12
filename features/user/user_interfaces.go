@@ -7,6 +7,7 @@ type UserDataInterface interface {
 	Insert(input features.UserEntity) error
 	Select(id int) (features.UserEntity,error)
 	Delete(id int) error
+	SelectId(id int) error
 	
 }
 
@@ -15,4 +16,5 @@ type UserServiceInterface interface {
 	AddUser(input features.UserEntity) error
 	GetUser(id int) (features.UserEntity,error)
 	DeleteUser(id int) error
+	GetId(id int) error
 }

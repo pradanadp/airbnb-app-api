@@ -13,14 +13,24 @@ type UserData struct {
 	db *gorm.DB
 }
 
+// SelectId implements user.UserDataInterface
+func (repo *UserData) SelectId(id int) error {
+	var user features.User
+	tx := repo.db.Where("id = ?", id).First(&user)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
 // Delete implements user.UserDataInterface
 func (repo *UserData) Delete(id int) error {
-	tx := repo.db.Delete(&features.User{},id)
+	tx := repo.db.Delete(&features.User{}, id)
 	if tx.Error != nil {
 		return tx.Error
 	}
 
-	return nil	
+	return nil
 }
 
 // Select implements user.UserDataInterface

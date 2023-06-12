@@ -82,6 +82,11 @@ func (handler *UserController) GetUser(c echo.Context) error {
 
 func (handler *UserController) DeleteUser(c echo.Context) error {
 	id := middlewares.ExtracTokenUserId(c)
+	errId := handler.userService.GetId(id)
+	if errId != nil {
+		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("fail to id user not found"))
+	}
+
 	err := handler.userService.DeleteUser(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("delete Fail to Delete akun User", nil))
