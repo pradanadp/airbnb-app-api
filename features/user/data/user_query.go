@@ -13,6 +13,19 @@ type UserData struct {
 	db *gorm.DB
 }
 
+// Select implements user.UserDataInterface
+func (repo *UserData) Select(id int) (features.UserEntity, error) {
+	var user features.User
+	tx := repo.db.Where("id = ?", id).First(&user)
+	if tx.Error != nil {
+		return features.UserEntity{}, tx.Error
+	}
+
+	mapUser := features.UserModelToEntity(user)
+
+	return mapUser, nil
+}
+
 // Insert implements user.UserDataInterface
 func (repo *UserData) Insert(input features.UserEntity) error {
 	hashPassword, err := utils.HashPasword(input.Password)
