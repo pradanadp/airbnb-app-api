@@ -37,6 +37,7 @@ type HomestayEntity struct {
 	Address     string          `json:"address,omitempty" form:"address"`
 	Price       float64         `json:"price,omitempty" form:"price"`
 	Facilities  string          `json:"facilities,omitempty" form:"facilities"`
+	Rating      float64         `json:"rating"`
 	CreatedAt   time.Time       `json:"created_at,omitempty"`
 	UpdatedAt   time.Time       `json:"updated_at,omitempty"`
 	DeletedAt   time.Time       `json:"deleted_at,omitempty"`
@@ -78,7 +79,7 @@ type ReviewEntity struct {
 	HomestayID uint           `json:"homestay_id,omitempty" form:"homestay_id"`
 	Homestay   HomestayEntity `json:"homestay,omitempty"`
 	Reviews    string         `json:"reviews,omitempty" form:"reviews"`
-	Ratings    uint           `json:"ratings,omitempty" form:"ratings"`
+	Ratings    float64        `json:"ratings,omitempty" form:"ratings"`
 	CreatedAt  time.Time      `json:"created_at,omitempty"`
 	UpdatedAt  time.Time      `json:"updated_at,omitempty"`
 	DeletedAt  time.Time      `json:"deleted_at,omitempty"`

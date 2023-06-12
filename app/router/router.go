@@ -23,7 +23,10 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	homestaysGroup := e.Group("/homestays")
 	{
 		homestaysGroup.POST("", homestayControllerAPI.CreateHomestay)
+		homestaysGroup.GET("", homestayControllerAPI.ReadAllHomestay)
 		homestaysGroup.GET("/:homestay_id", homestayControllerAPI.ReadHomestay)
+		homestaysGroup.PUT("/:homestay_id", homestayControllerAPI.UpdateHomestay)
+		homestaysGroup.DELETE("/:homestay_id", homestayControllerAPI.DeleteHomestay)
 	}
 
 	//User Router
@@ -31,8 +34,8 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	UserService := userService.New(UserData)
 	UserController := userController.New(UserService)
 
-	e.POST("/login",UserController.LoginUser)
-	e.POST("/users",UserController.AddUser)
-	e.GET("/users",UserController.GetUser,middlewares.JWTMiddleware())
-	e.DELETE("/users",UserController.DeleteUser,middlewares.JWTMiddleware())
+	e.POST("/login", UserController.LoginUser)
+	e.POST("/users", UserController.AddUser)
+	e.GET("/users", UserController.GetUser, middlewares.JWTMiddleware())
+	e.DELETE("/users", UserController.DeleteUser, middlewares.JWTMiddleware())
 }

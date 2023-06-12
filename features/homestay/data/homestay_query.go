@@ -47,6 +47,10 @@ func (hq *homestayQuery) Select(homestayID uint) (models.HomestayEntity, error) 
 		return models.HomestayEntity{}, queryResult.Error
 	}
 
+	// var rating float64
+	// hq.db.Raw("SELECT AVG(ratings) FROM Reviews WHERE homestay_id = ?", homestayID).Scan(&rating)
+	// homestay.Rating = rating
+
 	homestayEntity := models.HomestayModelToEntity(homestay)
 
 	return homestayEntity, nil
@@ -63,6 +67,9 @@ func (hq *homestayQuery) SelectAll() ([]models.HomestayEntity, error) {
 
 	var homestayEntities []models.HomestayEntity
 	for _, homestay := range homestays {
+		// var rating float64
+		// hq.db.Raw("SELECT AVG(ratings) FROM Reviews WHERE homestay_id = ?", homestay.ID).Scan(&rating)
+		// homestay.Rating = rating
 		homestayEntity := models.HomestayModelToEntity(homestay)
 		homestayEntities = append(homestayEntities, homestayEntity)
 	}

@@ -26,4 +26,5 @@ func InitialMigration(db *gorm.DB) {
 	db.AutoMigrate(&models.Payment{})
 	db.AutoMigrate(&models.Booking{})
 	db.AutoMigrate(&models.Review{})
+	db.AutoMigrate(&models.Image{})
 }
