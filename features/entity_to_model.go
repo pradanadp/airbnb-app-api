@@ -27,7 +27,6 @@ func HomestayEntityToModel(homestay HomestayEntity) Homestay {
 		Address:     homestay.Address,
 		Price:       homestay.Price,
 		Facilities:  homestay.Facilities,
-		Rating:      homestay.Rating,
 	}
 }
 

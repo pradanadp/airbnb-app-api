@@ -66,7 +66,6 @@ func HomestayModelToEntity(homestay Homestay) HomestayEntity {
 		Address:     homestay.Address,
 		Price:       homestay.Price,
 		Facilities:  homestay.Facilities,
-		Rating:      homestay.Rating,
 		CreatedAt:   homestay.CreatedAt,
 		UpdatedAt:   homestay.UpdatedAt,
 		DeletedAt:   homestay.DeletedAt.Time,

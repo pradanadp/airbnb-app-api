@@ -37,7 +37,6 @@ type HomestayEntity struct {
 	Address     string          `json:"address,omitempty" form:"address"`
 	Price       float64         `json:"price,omitempty" form:"price"`
 	Facilities  string          `json:"facilities,omitempty" form:"facilities"`
-	Rating      float64         `json:"rating,omitempty" form:"rating"`
 	CreatedAt   time.Time       `json:"created_at,omitempty"`
 	UpdatedAt   time.Time       `json:"updated_at,omitempty"`
 	DeletedAt   time.Time       `json:"deleted_at,omitempty"`
