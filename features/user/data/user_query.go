@@ -13,6 +13,16 @@ type UserData struct {
 	db *gorm.DB
 }
 
+// Delete implements user.UserDataInterface
+func (repo *UserData) Delete(id int) error {
+	tx := repo.db.Delete(&features.User{},id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil	
+}
+
 // Select implements user.UserDataInterface
 func (repo *UserData) Select(id int) (features.UserEntity, error) {
 	var user features.User

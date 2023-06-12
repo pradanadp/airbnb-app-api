@@ -79,3 +79,12 @@ func (handler *UserController) GetUser(c echo.Context) error {
 	mapUser := EntityToResponse(user)
 	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser))
 }
+
+func (handler *UserController) DeleteUser(c echo.Context) error {
+	id := middlewares.ExtracTokenUserId(c)
+	err := handler.userService.DeleteUser(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("delete Fail to Delete akun User", nil))
+	}
+	return c.JSON(http.StatusOK, utils.SuccessWhitoutResponse("Success delete akun User"))
+}
