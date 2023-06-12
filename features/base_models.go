@@ -31,7 +31,7 @@ type Homestay struct {
 	Location    string    `gorm:"column:location;not null"`
 	Price       float64   `gorm:"column:price;not null"`
 	Facilities  string    `gorm:"column:facilities;not null"`
-	Images      []string  `gorm:"column:images_links;not null"`
+	Images      string    `gorm:"column:images_links;not null"`
 	Bookings    []Booking `gorm:"foreignKey:HomestayID"`
 	Reviews     []Review  `gorm:"foreignKey:HomestayID"`
 }
