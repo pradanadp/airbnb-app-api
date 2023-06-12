@@ -84,3 +84,8 @@ type PaymentEntity struct {
 	DeletedAt time.Time       `json:"deleted_at,omitempty"`
 	Bookings  []BookingEntity `json:"bookings,omitempty"`
 }
+
+type LoginUser struct {
+	Email          string     `json:"email,omitempty" form:"email" validate:"required,email"`
+	Password       string     `json:"password,omitempty" form:"password" validate:"required"`
+}
