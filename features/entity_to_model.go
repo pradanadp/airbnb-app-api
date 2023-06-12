@@ -24,9 +24,17 @@ func HomestayEntityToModel(homestay HomestayEntity) Homestay {
 		Title:       homestay.Title,
 		Description: homestay.Description,
 		Location:    homestay.Location,
+		Address:     homestay.Address,
 		Price:       homestay.Price,
 		Facilities:  homestay.Facilities,
-		Images:      homestay.Images,
+		Rating:      homestay.Rating,
+	}
+}
+
+func ImageEntityToModel(image ImageEntity) Image {
+	return Image{
+		HomestayID: image.HomestayID,
+		Link:       image.Link,
 	}
 }
 

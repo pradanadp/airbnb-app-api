@@ -51,6 +51,11 @@ func HomestayModelToEntity(homestay Homestay) HomestayEntity {
 		reviewEntities = append(reviewEntities, ReviewModelToEntity(review))
 	}
 
+	var imageEntities []ImageEntity
+	for _, image := range homestay.Images {
+		imageEntities = append(imageEntities, ImageModelToEntity(image))
+	}
+
 	return HomestayEntity{
 		ID:          homestay.ID,
 		HostID:      homestay.HostID,
@@ -58,14 +63,28 @@ func HomestayModelToEntity(homestay Homestay) HomestayEntity {
 		Title:       homestay.Title,
 		Description: homestay.Description,
 		Location:    homestay.Location,
+		Address:     homestay.Address,
 		Price:       homestay.Price,
 		Facilities:  homestay.Facilities,
-		Images:      homestay.Images,
+		Rating:      homestay.Rating,
 		CreatedAt:   homestay.CreatedAt,
 		UpdatedAt:   homestay.UpdatedAt,
 		DeletedAt:   homestay.DeletedAt.Time,
 		Bookings:    bookingEntities,
 		Reviews:     reviewEntities,
+		Images:      imageEntities,
+	}
+}
+
+func ImageModelToEntity(image Image) ImageEntity {
+	return ImageEntity{
+		ID:         image.ID,
+		HomestayID: image.HomestayID,
+		Homestay:   HomestayModelToEntity(image.Homestay),
+		Link:       image.Link,
+		CreatedAt:  image.CreatedAt,
+		UpdatedAt:  image.UpdatedAt,
+		DeletedAt:  image.DeletedAt.Time,
 	}
 }
 

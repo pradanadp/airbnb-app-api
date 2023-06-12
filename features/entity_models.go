@@ -34,14 +34,26 @@ type HomestayEntity struct {
 	Title       string          `json:"title,omitempty" form:"title"`
 	Description string          `json:"description,omitempty" form:"description"`
 	Location    string          `json:"location,omitempty" form:"location"`
+	Address     string          `json:"address,omitempty" form:"address"`
 	Price       float64         `json:"price,omitempty" form:"price"`
 	Facilities  string          `json:"facilities,omitempty" form:"facilities"`
-	Images      string          `json:"images_links,omitempty" form:"images_links"`
+	Rating      float64         `json:"rating,omitempty" form:"rating"`
 	CreatedAt   time.Time       `json:"created_at,omitempty"`
 	UpdatedAt   time.Time       `json:"updated_at,omitempty"`
 	DeletedAt   time.Time       `json:"deleted_at,omitempty"`
 	Bookings    []BookingEntity `json:"bookings,omitempty"`
 	Reviews     []ReviewEntity  `json:"reviews,omitempty"`
+	Images      []ImageEntity   `json:"images,omitempty"`
+}
+
+type ImageEntity struct {
+	ID         uint           `json:"image_id,omitempty" form:"image_id"`
+	HomestayID uint           `json:"homestay_id,omitempty" form:"host_id"`
+	Homestay   HomestayEntity `json:"homestay,omitempty"`
+	Link       string         `json:"link,omitempty"`
+	CreatedAt  time.Time      `json:"created_at,omitempty"`
+	UpdatedAt  time.Time      `json:"updated_at,omitempty"`
+	DeletedAt  time.Time      `json:"deleted_at,omitempty"`
 }
 
 type BookingEntity struct {
@@ -86,6 +98,6 @@ type PaymentEntity struct {
 }
 
 type LoginUser struct {
-	Email          string     `json:"email,omitempty" form:"email" validate:"required,email"`
-	Password       string     `json:"password,omitempty" form:"password" validate:"required"`
+	Email    string `json:"email,omitempty" form:"email" validate:"required,email"`
+	Password string `json:"password,omitempty" form:"password" validate:"required"`
 }

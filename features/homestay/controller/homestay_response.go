@@ -32,7 +32,6 @@ func HomestayEntityToResponse(homestay models.HomestayEntity) HomestayResponse {
 		Location:    homestay.Location,
 		Price:       homestay.Price,
 		Facilities:  homestay.Facilities,
-		Images:      homestay.Images,
 		Reviews:     reviews,
 	}
 }

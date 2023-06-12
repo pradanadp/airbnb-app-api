@@ -29,11 +29,20 @@ type Homestay struct {
 	Title       string    `gorm:"column:title;not null"`
 	Description string    `gorm:"column:description;not null"`
 	Location    string    `gorm:"column:location;not null"`
+	Address     string    `gorm:"column:address;not null"`
 	Price       float64   `gorm:"column:price;not null"`
 	Facilities  string    `gorm:"column:facilities;not null"`
-	Images      string    `gorm:"column:images_links;not null"`
+	Rating      float64   `gorm:"column:ratings;not null"`
 	Bookings    []Booking `gorm:"foreignKey:HomestayID"`
 	Reviews     []Review  `gorm:"foreignKey:HomestayID"`
+	Images      []Image   `gorm:"foreignKey:HomestayID"`
+}
+
+type Image struct {
+	gorm.Model
+	HomestayID uint     `gorm:"column:homestay_id;not null"`
+	Homestay   Homestay `gorm:"foreignKey:HomestayID"`
+	Link       string   `gorm:"column:link;not null"`
 }
 
 type Booking struct {

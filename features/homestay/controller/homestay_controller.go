@@ -59,3 +59,17 @@ func (hc *homestayController) ReadHomestay(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, utils.SuccessResponse("homestay retrieved successfully", homestayResponse))
 }
+
+func (hc *homestayController) ReadAllHomestay(c echo.Context) error {
+	homestays, err := hc.homestayService.GetAllHomestay()
+	if err != nil {
+		return c.JSON(http.StatusNotFound, utils.FailResponse("homestays not found", nil))
+	}
+
+	var homestayResponses []HomestayResponse
+	for _, homestay := range homestays {
+		homestayResponses = append(homestayResponses, HomestayEntityToResponse(homestay))
+	}
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("homestays retrieved successfully", homestayResponses))
+}

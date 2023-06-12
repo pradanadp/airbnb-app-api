@@ -22,12 +22,12 @@ func (hs *homestayService) CreateHomestay(homestay models.HomestayEntity) (uint,
 		return 0, errors.New("error, description is required")
 	case homestay.Location == "":
 		return 0, errors.New("error, location is required")
+	case homestay.Address == "":
+		return 0, errors.New("error, address is required")
 	case homestay.Price == 0.0:
 		return 0, errors.New("error, price is required")
 	case homestay.Facilities == "":
 		return 0, errors.New("error, facilities is required")
-	case homestay.Images == "":
-		return 0, errors.New("error, image links are required")
 	}
 
 	homestayID, err := hs.homestayRepository.Insert(homestay)
