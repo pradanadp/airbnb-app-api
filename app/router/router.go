@@ -1,6 +1,7 @@
 package router
 
 import (
+	"be-api/app/middlewares"
 	homestayControllerInit "be-api/features/homestay/controller"
 	homestayRepoInit "be-api/features/homestay/data"
 	homestayServiceInit "be-api/features/homestay/service"
@@ -32,4 +33,5 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 
 	e.POST("/login",UserController.LoginUser)
 	e.POST("/users",UserController.AddUser)
+	e.GET("/users",UserController.GetUser,middlewares.JWTMiddleware())
 }
