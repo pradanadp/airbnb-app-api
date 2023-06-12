@@ -95,8 +95,6 @@ func BookingModelToEntity(booking Booking) BookingEntity {
 		Customer:     UserModelToEntity(booking.Customer),
 		HomestayID:   booking.HomestayID,
 		Homestay:     HomestayModelToEntity(booking.Homestay),
-		PaymentID:    booking.PaymentID,
-		Payment:      PaymentModelToEntity(booking.Payment),
 		CheckInDate:  booking.CheckInDate,
 		CheckOutdate: booking.CheckOutdate,
 		Status:       booking.Status,
@@ -124,18 +122,14 @@ func ReviewModelToEntity(review Review) ReviewEntity {
 }
 
 func PaymentModelToEntity(payment Payment) PaymentEntity {
-	var bookingEntities []BookingEntity
-	for _, booking := range payment.Bookings {
-		bookingEntities = append(bookingEntities, BookingModelToEntity(booking))
-	}
-
 	return PaymentEntity{
 		ID:        payment.ID,
+		BookingID: payment.BookingID,
+		Booking:   BookingModelToEntity(payment.Booking),
 		Name:      payment.Name,
 		Status:    payment.Status,
 		CreatedAt: payment.CreatedAt,
 		UpdatedAt: payment.UpdatedAt,
 		DeletedAt: payment.DeletedAt.Time,
-		Bookings:  bookingEntities,
 	}
 }

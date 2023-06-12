@@ -42,7 +42,6 @@ func BookingEntityToModel(booking BookingEntity) Booking {
 	return Booking{
 		CustomerID:   booking.CustomerID,
 		HomestayID:   booking.HomestayID,
-		PaymentID:    booking.PaymentID,
 		CheckInDate:  booking.CheckInDate,
 		CheckOutdate: booking.CheckOutdate,
 		Status:       booking.Status,
@@ -62,7 +61,8 @@ func ReviewEntityToModel(review ReviewEntity) Review {
 
 func PaymentEntityToModel(payment PaymentEntity) Payment {
 	return Payment{
-		Name:   payment.Name,
-		Status: payment.Status,
+		BookingID: payment.BookingID,
+		Name:      payment.Name,
+		Status:    payment.Status,
 	}
 }

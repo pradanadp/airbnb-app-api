@@ -62,8 +62,6 @@ type BookingEntity struct {
 	Customer     UserEntity     `json:"customer,omitempty"`
 	HomestayID   uint           `json:"homestay_id,omitempty" form:"homestay_id"`
 	Homestay     HomestayEntity `json:"homestay,omitempty"`
-	PaymentID    uint           `json:"payment_id,omitempty" form:"payment_id"`
-	Payment      PaymentEntity  `json:"payment,omitempty"`
 	CheckInDate  string         `json:"check_in_date,omitempty" form:"check_in_date"`
 	CheckOutdate string         `json:"check_out_date,omitempty" form:"check_out_date"`
 	Status       string         `json:"booking_status,omitempty" form:"booking_status"`
@@ -75,7 +73,7 @@ type BookingEntity struct {
 }
 
 type ReviewEntity struct {
-	ID         uint           `json:"booking_id,omitempty" form:"booking_id"`
+	ID         uint           `json:"review_id,omitempty" form:"review_id"`
 	CustomerID uint           `json:"customer_id,omitempty" form:"customer_id"`
 	Customer   UserEntity     `json:"customer,omitempty"`
 	HomestayID uint           `json:"homestay_id,omitempty" form:"homestay_id"`
@@ -88,13 +86,14 @@ type ReviewEntity struct {
 }
 
 type PaymentEntity struct {
-	ID        uint            `json:"booking_id,omitempty" form:"booking_id"`
-	Name      string          `json:"payment_name,omitempty" form:"payment_name"`
-	Status    string          `json:"payment_status,omitempty" form:"payment_status"`
-	CreatedAt time.Time       `json:"created_at,omitempty"`
-	UpdatedAt time.Time       `json:"updated_at,omitempty"`
-	DeletedAt time.Time       `json:"deleted_at,omitempty"`
-	Bookings  []BookingEntity `json:"bookings,omitempty"`
+	ID        uint          `json:"payment_id,omitempty" form:"payment_id"`
+	BookingID uint          `json:"booking_id,omitempty" form:"booking_id"`
+	Booking   BookingEntity `json:"booking,omitempty"`
+	Name      string        `json:"payment_name,omitempty" form:"payment_name"`
+	Status    string        `json:"payment_status,omitempty" form:"payment_status"`
+	CreatedAt time.Time     `json:"created_at,omitempty"`
+	UpdatedAt time.Time     `json:"updated_at,omitempty"`
+	DeletedAt time.Time     `json:"deleted_at,omitempty"`
 }
 
 type LoginUser struct {
