@@ -13,13 +13,24 @@ type UserService struct {
 	validate *validator.Validate
 }
 
+// GetId implements user.UserServiceInterface
+func (service *UserService) GetId(id int) error {
+	err := service.userData.SelectId(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// SelectId implements user.UserServiceInterface
+
 // DeleteUser implements user.UserServiceInterface
 func (service *UserService) DeleteUser(id int) error {
 	err := service.userData.Delete(id)
 	if err != nil {
 		return err
 	}
-	return nil	
+	return nil
 }
 
 // GetUser implements user.UserServiceInterface
