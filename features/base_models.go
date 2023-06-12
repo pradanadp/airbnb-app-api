@@ -6,7 +6,7 @@ type User struct {
 	gorm.Model
 	FirstName      string     `gorm:"column:first_name;not null"`
 	LastName       string     `gorm:"column:last_name;not null"`
-	Username       string     `gorm:"column:username;not null"`
+	Username       string     `gorm:"column:username;unique;not null"`
 	Email          string     `gorm:"column:email;unique;not null"`
 	Password       string     `gorm:"column:password;not null"`
 	Phone          string     `gorm:"column:phone;unique;not null"`
