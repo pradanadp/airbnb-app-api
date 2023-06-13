@@ -12,6 +12,15 @@ type ReviewService struct {
 	validate   *validator.Validate
 }
 
+// GetId implements review.ReviewServiceInterface
+func (service *ReviewService) GetId(review_id uint) (features.ReviewEntity,error) {
+	reviewUser, err := service.reviewData.SelectId(review_id)
+	if err != nil {
+		return features.ReviewEntity{}, err
+	}
+	return reviewUser, err
+}
+
 // DeleteRiview implements review.ReviewServiceInterface
 func (service *ReviewService) DeleteRiview(review_id uint) error {
 	err := service.reviewData.Delete(review_id)

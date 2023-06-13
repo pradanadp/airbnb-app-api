@@ -39,8 +39,14 @@ func (control *ReviewControll) AddReview(c echo.Context) error {
 			return c.JSON(http.StatusInternalServerError, utils.FailResponse("failed to insert data. "+err.Error(), nil))
 		}
 	}
+	review, errReview :=control.reviewControll.GetId(id_Review)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("failed, data tidak ditemukan", nil))
+	}
+	
+	data := EntityToResponse(review)
 
-	return c.JSON(http.StatusOK, utils.SuccessResponse("review created successfully", id_Review))	
+	return c.JSON(http.StatusOK, utils.SuccessResponse("review created successfully", data))	
 }
 
 func (control *ReviewControll) DeleteReview(c echo.Context) error {
