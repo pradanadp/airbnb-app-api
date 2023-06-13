@@ -8,7 +8,7 @@ type User struct {
 	gorm.Model
 	FirstName      string     `gorm:"column:first_name;not nul"`
 	LastName       string     `gorm:"column:last_name;not nul"`
-	Username       string     `gorm:"column:username;unique";not nul`
+	Username       string     `gorm:"column:username;unique;not nul"`
 	Email          string     `gorm:"column:email;unique;not nul"`
 	Password       string     `gorm:"column:password;not nul"`
 	Phone          string     `gorm:"column:phone;unique;not nul"`
