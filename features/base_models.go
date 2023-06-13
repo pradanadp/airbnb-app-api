@@ -6,17 +6,20 @@ import (
 
 type User struct {
 	gorm.Model
-	FirstName      string     `gorm:"column:first_name"`
-	LastName       string     `gorm:"column:last_name"`
-	Username       string     `gorm:"column:username;unique"`
-	Email          string     `gorm:"column:email;unique;not null"`
-	Password       string     `gorm:"column:password"`
-	Phone          string     `gorm:"column:phone;unique;not null"`
-	BirthDate      string     `gorm:"column:birth_date"`
-	Address        string     `gorm:"column:address;not null"`
-	Gender         string     `gorm:"type:enum('male','female');default:'male';column:gender;not null"`
-	Role           string     `gorm:"type:enum('hoster','user');default:'user';column:role;not null"`
+	FirstName      string     `gorm:"column:first_name;not nul"`
+	LastName       string     `gorm:"column:last_name;not nul"`
+	Username       string     `gorm:"column:username;unique";not nul`
+	Email          string     `gorm:"column:email;unique;not nul"`
+	Password       string     `gorm:"column:password;not nul"`
+	Phone          string     `gorm:"column:phone;unique;not nul"`
+	BirthDate      string     `gorm:"column:birth_date;not nul"`
+	Address        string     `gorm:"column:address;not nul"`
+	Gender         string     `gorm:"type:enum('male','female');default:'male';column:gender;not nul"`
+	Role           string     `gorm:"type:enum('hoster','user');default:'user';column:role;not nul"`
 	Bio            string     `gorm:"column:bio"`
+	NamaPemilik    string     `gorm:"column:nama_pemilik"`
+	KTPFile        string     `gorm:"column:ktp_file"`
+	NIBFile        string     `gorm:"column:nib_file"`
 	HostingCount   uint       `gorm:"column:hosting_count"`
 	BookingCount   uint       `gorm:"column:booking_count"`
 	HostDocument   string     `gorm:"column:host_document"`

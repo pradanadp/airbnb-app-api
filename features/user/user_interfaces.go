@@ -9,6 +9,7 @@ type UserDataInterface interface {
 	Delete(id int) error
 	SelectId(id int) error
 	Update(input features.UserEntity,id uint) error
+	//Upgrade(input feature)
 	
 }
 
