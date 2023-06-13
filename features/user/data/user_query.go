@@ -15,7 +15,7 @@ type UserData struct {
 }
 
 // Upgrade implements user.UserDataInterface
-func (repo *UserData) Upgrade(input features.UserEntity, id uint) error {
+func (repo *UserData) Upgrade(input features.UserEntity, id uint) (error) {
 	var user features.User
 	tx := repo.db.Where("id = ?", id).First(&user)
 	if tx.Error != nil {
@@ -31,11 +31,12 @@ func (repo *UserData) Upgrade(input features.UserEntity, id uint) error {
 	if updateOpr.Error != nil {
 		return errors.New(updateOpr.Error.Error() + ", failed to update user")
 	}
+
 	return nil
 }
 
 // Update implements user.UserDataInterface
-func (repo *UserData) Update(input features.UserEntity, id uint) error {
+func (repo *UserData) Update(input features.UserEntity, id uint) (error) {
 	var user features.User
 	tx := repo.db.Where("id = ?", id).First(&user)
 	if tx.Error != nil {
@@ -84,10 +85,10 @@ func (repo *UserData) Select(id int) (features.UserEntity, error) {
 }
 
 // Insert implements user.UserDataInterface
-func (repo *UserData) Insert(input features.UserEntity) error {
+func (repo *UserData) Insert(input features.UserEntity) (uint,error) {
 	hashPassword, err := utils.HashPasword(input.Password)
 	if err != nil {
-		return errors.New("error hashing password: " + err.Error())
+		return 0,errors.New("error hashing password: " + err.Error())
 	}
 	input.Password = hashPassword
 	userData := features.UserEntityToModel(input)
@@ -97,20 +98,22 @@ func (repo *UserData) Insert(input features.UserEntity) error {
 
 		tx := repo.db.Create(&userData)
 		if tx.Error != nil {
-			return tx.Error
+			return 0,tx.Error
 		} else if tx.RowsAffected == 0 {
-			return errors.New("insert data user failed, rows affected 0 ")
+			return 0,errors.New("insert data user failed, rows affected 0 ")
 		}
-		return nil
+		id := userData.ID
+		return id,nil
 	}
 
 	tx := repo.db.Create(&userData)
 	if tx.Error != nil {
-		return tx.Error
+		return 0,tx.Error
 	} else if tx.RowsAffected == 0 {
-		return errors.New("insert data user failed, rows affected 0 ")
+		return 0,errors.New("insert data user failed, rows affected 0 ")
 	}
-	return nil
+	id := userData.ID
+	return id,nil
 }
 
 // Login implements user.UserDataInterface
