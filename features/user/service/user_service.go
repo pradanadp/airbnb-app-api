@@ -13,6 +13,16 @@ type UserService struct {
 	validate *validator.Validate
 }
 
+// UpgradeUser implements user.UserServiceInterface
+func (service *UserService) UpgradeUser(input features.UserEntity, id uint) error {
+	err := service.userData.Upgrade(input, id)
+	if err != nil {
+		return fmt.Errorf("error: %v", err)
+	}
+
+	return nil	
+}
+
 // Update implements user.UserServiceInterface
 func (service *UserService) Update(input features.UserEntity, id uint) error {
 	err := service.userData.Update(input, id)

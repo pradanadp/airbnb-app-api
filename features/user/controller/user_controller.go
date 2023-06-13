@@ -112,3 +112,24 @@ func (handler *UserController) UpdateUser(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, utils.SuccessWhitoutResponse("Success update akun User"))
 }
+
+func (handler *UserController) UpgradeUser(c echo.Context) error {
+	id := middlewares.ExtracTokenUserId(c)
+	errId := handler.userService.GetId(id)
+	if errId != nil {
+		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("fail to id user not found"))
+	}
+
+	upgrade := features.UserEntity{}
+	if err := c.Bind(&upgrade); err != nil {
+		if err == echo.ErrBadRequest {
+			return c.JSON(http.StatusBadRequest, utils.FailResponse("error bind payload " + err.Error(), nil))
+		} 
+	}
+
+	errUpgrade := handler.userService.UpgradeUser(upgrade, uint(id))
+	if errUpgrade != nil {
+		return c.JSON(http.StatusInternalServerError, utils.FailResponse("status internal error "+errUpgrade.Error(), nil))
+	}
+	return c.JSON(http.StatusOK, utils.SuccessWhitoutResponse("Success upgrade akun User"))
+}
