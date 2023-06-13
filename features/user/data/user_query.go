@@ -70,7 +70,6 @@ func (repo *UserData) Insert(input features.UserEntity) error {
 	}
 	input.Password = hashPassword
 	userData := features.UserEntityToModel(input)
-	//userData.Role = "user"
 
 	tx := repo.db.Create(&userData)
 	if tx.Error != nil {
