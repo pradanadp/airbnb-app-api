@@ -41,12 +41,21 @@ func (handler *UserController) LoginUser(c echo.Context) error {
 			return c.JSON(http.StatusUnauthorized, utils.FailResponse("password yang anda berikan tidak valid", nil))
 		}
 	}
+	user, err := handler.userService.GetUser(userId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("data tidak tersedia ", nil))
+	}
+	mapUser := EntityToResponse(user)
+
 
 	accessToken, err := middlewares.CreateToken(userId)
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", accessToken))
+	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully",map[string]any{
+		"accessToken": accessToken, 
+		"user": mapUser,
+ } ))
 }
 
 func (handler *UserController) AddUser(c echo.Context) error {
