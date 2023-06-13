@@ -13,6 +13,22 @@ type UserData struct {
 	db *gorm.DB
 }
 
+// Update implements user.UserDataInterface
+func (repo *UserData) Update(input features.UserEntity, id uint) error {
+	var user features.User
+	tx := repo.db.Where("id = ?", id).First(&user)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	updatedUser:= features.UserEntityToModel(input)
+	updateOpr := repo.db.Model(&user).Updates(updatedUser)
+	if updateOpr.Error != nil {
+		return errors.New(updateOpr.Error.Error() + ", failed to update user")
+	}	
+	return nil	
+}
+
 // SelectId implements user.UserDataInterface
 func (repo *UserData) SelectId(id int) error {
 	var user features.User
