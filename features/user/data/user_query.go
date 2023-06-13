@@ -71,6 +71,8 @@ func (repo *UserData) Insert(input features.UserEntity) error {
 	input.Password = hashPassword
 	userData := features.UserEntityToModel(input)
 
+	userData.Username = userData.FirstName+userData.LastName+"_"+userData.Phone
+
 	tx := repo.db.Create(&userData)
 	if tx.Error != nil {
 		return tx.Error
