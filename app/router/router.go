@@ -10,6 +10,10 @@ import (
 	userData "be-api/features/user/data"
 	userService "be-api/features/user/service"
 
+	reviewController "be-api/features/review/controller"
+	reviewData "be-api/features/review/data"
+	reviewService "be-api/features/review/service"
+
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -38,4 +42,13 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	e.POST("/users", UserController.AddUser)
 	e.GET("/users", UserController.GetUser, middlewares.JWTMiddleware())
 	e.DELETE("/users", UserController.DeleteUser, middlewares.JWTMiddleware())
+
+
+	//review Router
+	ReviewData := reviewData.New(db)
+	reviewService := reviewService.New(ReviewData)
+	ReviewController := reviewController.New(reviewService)
+
+	e.POST("/reviews", ReviewController.AddReview,middlewares.JWTMiddleware())
+	e.DELETE("/reviews/:review_id", ReviewController.DeleteReview,middlewares.JWTMiddleware())
 }
