@@ -14,6 +14,10 @@ func main() {
 	mysql := database.InitMysql(cfg)
 	database.InitialMigration(mysql)
 
+	database.InitUsersData(mysql)
+	database.InitHomestaysData(mysql)
+	database.InitReviewsData(mysql)
+
 	e := echo.New()
 
 	e.Pre(middleware.RemoveTrailingSlash())
