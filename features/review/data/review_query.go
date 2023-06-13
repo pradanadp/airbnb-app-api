@@ -31,9 +31,9 @@ func (repo *ReviewData) Delete(review_id uint) error {
 		return tx.Error
 	}
 
-	errUpdate := UpdateRatings(repo.db,review.HomestayID,ratingsNew)
-	if errUpdate != nil{
-		return errUpdate
+	errUpdateRating:=UpdateRatings(repo.db,review.HomestayID,ratingsNew)
+	if errUpdateRating != nil{
+		return errUpdateRating
 	}
 
 	return nil
@@ -48,13 +48,17 @@ func (repo *ReviewData) Insert(input features.ReviewEntity, costumer_id uint) (u
 		return 0, err
 	}
 
+	errUpdateRating:=UpdateRatings(repo.db,ReviewModel.HomestayID,ratingUpdate)
+	if errUpdateRating != nil{
+		return 0,errUpdateRating
+	}
+
 	Costumers := features.User{}
 	FoundCostumersId := repo.db.First(&Costumers, "id=?", costumer_id)
 	if FoundCostumersId.Error != nil {
 		return 0, errors.New(FoundCostumersId.Error.Error() + ", failed to get costumers id")
 	}
 
-	ReviewModel.Ratings = ratingUpdate
 	ReviewModel.CustomerID = costumer_id
 	createOpr := repo.db.Create(&ReviewModel)
 	if createOpr.Error != nil {
@@ -63,11 +67,6 @@ func (repo *ReviewData) Insert(input features.ReviewEntity, costumer_id uint) (u
 
 	if createOpr.RowsAffected == 0 {
 		return 0, errors.New("failed to insert, row affected is 0")
-	}
-
-	errUpdate := UpdateRatings(repo.db,ReviewModel.HomestayID,ratingUpdate)
-	if errUpdate != nil{
-		return 0,errUpdate
 	}
 
 	return ReviewModel.ID, nil
@@ -151,7 +150,7 @@ func AverageRatingsDelete(db *gorm.DB,review_id uint, homestay_id uint) (float64
 }
 
 func UpdateRatings(db *gorm.DB, homestayID uint, averageRating float64) error {
-	result := db.Model(&features.Review{}).Where("homestay_id = ?", homestayID).Update("ratings", averageRating)
+	result := db.Model(&features.Homestay{}).Where("id = ?", homestayID).Update("rating", averageRating)
 	if result.Error != nil {
 		return result.Error
 	}
