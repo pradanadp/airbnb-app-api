@@ -67,14 +67,20 @@ func (handler *UserController) AddUser(c echo.Context) error {
 		} 
 	}
 
-	err := handler.userService.AddUser(payload); if err != nil {
+	id,err := handler.userService.AddUser(payload); if err != nil {
 		if strings.Contains(err.Error(), "validation") {
 			return c.JSON(http.StatusBadRequest, utils.FailResponse("error validation payload " + err.Error(), nil))
 		} else if strings.Contains(err.Error(), "Duplicate entry") {
 			return c.JSON(http.StatusBadRequest, utils.FailResponse("email tidak tersedia " + err.Error(), nil))
 		}                   
 	}
-	return c.JSON(http.StatusOK, utils.SuccessWhitoutResponse("successfully"))
+	user, err := handler.userService.GetUser(int(id))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("data tidak tersedia ", nil))
+	}
+	mapUser := EntityToResponse(user)
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser ))
 }
 
 func (handler *UserController) GetUser(c echo.Context) error {
@@ -119,7 +125,15 @@ func (handler *UserController) UpdateUser(c echo.Context) error {
 	if errUpdate != nil {
 		return c.JSON(http.StatusInternalServerError, utils.FailResponse("status internal error", nil))
 	}
-	return c.JSON(http.StatusOK, utils.SuccessWhitoutResponse("Success update akun User"))
+	
+	user, err := handler.userService.GetUser(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("data tidak tersedia ", nil))
+	}
+	mapUser := EntityToResponse(user)
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser ))
+
 }
 
 func (handler *UserController) UpgradeUser(c echo.Context) error {
@@ -140,5 +154,12 @@ func (handler *UserController) UpgradeUser(c echo.Context) error {
 	if errUpgrade != nil {
 		return c.JSON(http.StatusInternalServerError, utils.FailResponse("status internal error "+errUpgrade.Error(), nil))
 	}
-	return c.JSON(http.StatusOK, utils.SuccessWhitoutResponse("Success upgrade akun User"))
+
+	user, err := handler.userService.GetUser(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("data tidak tersedia ", nil))
+	}
+	mapUser := EntityToResponse(user)
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser ))
 }

@@ -14,7 +14,7 @@ type UserService struct {
 }
 
 // UpgradeUser implements user.UserServiceInterface
-func (service *UserService) UpgradeUser(input features.UserEntity, id uint) error {
+func (service *UserService) UpgradeUser(input features.UserEntity, id uint) (error) {
 	err := service.userData.Upgrade(input, id)
 	if err != nil {
 		return fmt.Errorf("error: %v", err)
@@ -24,7 +24,7 @@ func (service *UserService) UpgradeUser(input features.UserEntity, id uint) erro
 }
 
 // Update implements user.UserServiceInterface
-func (service *UserService) Update(input features.UserEntity, id uint) error {
+func (service *UserService) Update(input features.UserEntity, id uint) (error) {
 	err := service.userData.Update(input, id)
 	if err != nil {
 		return fmt.Errorf("error: %v", err)
@@ -63,15 +63,15 @@ func (service *UserService) GetUser(id int) (features.UserEntity, error) {
 }
 
 // AddUser implements user.UserServiceInterface
-func (service *UserService) AddUser(input features.UserEntity) error {
+func (service *UserService) AddUser(input features.UserEntity) (uint,error) {
 	if errValidate := service.validate.Struct(input); errValidate != nil {
-		return errValidate
+		return 0,errValidate
 	}
-	err := service.userData.Insert(input)
+	id,err := service.userData.Insert(input)
 	if err != nil {
-		return err
+		return 0,err
 	}
-	return nil
+	return id,nil
 }
 
 // LoginUser implements user.UserServiceInterface
