@@ -12,16 +12,27 @@ type ReviewData struct {
 	db *gorm.DB
 }
 
+// SelectId implements review.ReviewDataInterface
+func (repo *ReviewData) SelectId(review_id uint) (features.ReviewEntity, error) {
+	var review features.Review
+	tx := repo.db.Where("id = ?", review_id).First(&review)
+	if tx.Error != nil {
+		return features.ReviewEntity{},tx.Error
+	}
+	data := features.ReviewModelToEntity(review)
+	return data,nil	
+}
+
 // Delete implements review.ReviewDataInterface
 func (repo *ReviewData) Delete(review_id uint) error {
 	var review features.Review
 
-	FoundRivewsId := repo.db.First(&review, "id=?",review_id)
+	FoundRivewsId := repo.db.First(&review, "id=?", review_id)
 	if FoundRivewsId.Error != nil {
 		return errors.New(FoundRivewsId.Error.Error() + ", failed to get review id")
 	}
 
-	ratingsNew, errRatings:=AverageRatingsDelete(repo.db,review_id,review.HomestayID)
+	ratingsNew, errRatings := AverageRatingsDelete(repo.db, review_id, review.HomestayID)
 	if errRatings != nil {
 		return errRatings
 	}
@@ -31,8 +42,8 @@ func (repo *ReviewData) Delete(review_id uint) error {
 		return tx.Error
 	}
 
-	errUpdateRating:=UpdateRatings(repo.db,review.HomestayID,ratingsNew)
-	if errUpdateRating != nil{
+	errUpdateRating := UpdateRatings(repo.db, review.HomestayID, ratingsNew)
+	if errUpdateRating != nil {
 		return errUpdateRating
 	}
 
@@ -43,14 +54,14 @@ func (repo *ReviewData) Delete(review_id uint) error {
 func (repo *ReviewData) Insert(input features.ReviewEntity, costumer_id uint) (uint, error) {
 	ReviewModel := features.ReviewEntityToModel(input)
 
-	ratingUpdate,err := AverageRatingsInsert(repo.db, ReviewModel.Ratings,ReviewModel.HomestayID)
-	if err != nil{
+	ratingUpdate, err := AverageRatingsInsert(repo.db, ReviewModel.Ratings, ReviewModel.HomestayID)
+	if err != nil {
 		return 0, err
 	}
 
-	errUpdateRating:=UpdateRatings(repo.db,ReviewModel.HomestayID,ratingUpdate)
-	if errUpdateRating != nil{
-		return 0,errUpdateRating
+	errUpdateRating := UpdateRatings(repo.db, ReviewModel.HomestayID, ratingUpdate)
+	if errUpdateRating != nil {
+		return 0, errUpdateRating
 	}
 
 	Costumers := features.User{}
@@ -79,74 +90,74 @@ func New(db *gorm.DB) review.ReviewDataInterface {
 
 }
 
-func AverageRatingsInsert(db *gorm.DB, inputRating float64, homestay_id uint) (float64 ,error){
+func AverageRatingsInsert(db *gorm.DB, inputRating float64, homestay_id uint) (float64, error) {
 
 	var total float64
-    var count int
+	var count int
 
 	review := []features.Review{}
-	FoundhomestayId := db.Find(&review, "homestay_id=?",homestay_id)
+	FoundhomestayId := db.Find(&review, "homestay_id=?", homestay_id)
 	if FoundhomestayId.Error != nil {
-		return 0,errors.New(FoundhomestayId.Error.Error() + ", failed to get review id")
+		return 0, errors.New(FoundhomestayId.Error.Error() + ", failed to get review id")
 	}
-	
+
 	var tampungRating []float64
-	for _,lastRatings := range review{
+	for _, lastRatings := range review {
 		tampungRating = append(tampungRating, lastRatings.Ratings)
 	}
 	tampungRating = append(tampungRating, inputRating)
 
-	for _, value := range tampungRating{
-        total += value
-        count++
+	for _, value := range tampungRating {
+		total += value
+		count++
 	}
 
 	var average float64
 
-    if count > 0 {
-        average = total / float64(count)
-    }
+	if count > 0 {
+		average = total / float64(count)
+	}
 
-	return average,nil
+	return average, nil
 }
 
-func AverageRatingsDelete(db *gorm.DB,review_id uint, homestay_id uint) (float64 ,error){
+func AverageRatingsDelete(db *gorm.DB, review_id uint, homestay_id uint) (float64, error) {
 
 	var total float64
-    var count int
+	var count int
 
 	review := []features.Review{}
 
-	FoundhomestayId := db.Find(&review, "homestay_id=?",homestay_id)
+	FoundhomestayId := db.Find(&review, "homestay_id=?", homestay_id)
 	if FoundhomestayId.Error != nil {
-		return 0,errors.New(FoundhomestayId.Error.Error() + ", failed to get review id")
+		return 0, errors.New(FoundhomestayId.Error.Error() + ", failed to get review id")
 	}
-	
+
 	var tampungRating []float64
-	for _,lastRatings := range review{
+	for _, lastRatings := range review {
 		tampungRating = append(tampungRating, lastRatings.Ratings)
 	}
 	reviewId := features.Review{}
-	FoundreviewId := db.First(&reviewId, "homestay_id=? AND id=?",homestay_id,review_id)
+	FoundreviewId := db.First(&reviewId, "homestay_id=? AND id=?", homestay_id, review_id)
 	if FoundreviewId.Error != nil {
-		return 0,errors.New(FoundreviewId.Error.Error() + ", failed to get review id")
+		return 0, errors.New(FoundreviewId.Error.Error() + ", failed to get review id")
 	}
 
-	for _, value := range tampungRating{
-        total += value
-        count++
+	for _, value := range tampungRating {
+		total += value
+		count++
 	}
 
-	total = total-reviewId.Ratings
+	total = total - reviewId.Ratings
 	count = count - 1
 
 	var average float64
 
-    if count > 0 {
-        average = total / float64(count)
-    }
+	if count > 0 {
+		average = total / float64(count)
+	}
 
-	return average,nil
+	return average, nil
 }
 
 func UpdateRatings(db *gorm.DB, homestayID uint, averageRating float64) error {
