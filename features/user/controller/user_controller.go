@@ -5,7 +5,6 @@ import (
 	"be-api/features"
 	"be-api/features/user"
 	"be-api/utils"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -53,7 +52,6 @@ func (handler *UserController) LoginUser(c echo.Context) error {
 func (handler *UserController) AddUser(c echo.Context) error {
 
 	payload := features.UserEntity{}
-	fmt.Println(payload)
 	if err := c.Bind(&payload); err != nil {
 		if err == echo.ErrBadRequest {
 			return c.JSON(http.StatusBadRequest, utils.FailResponse("error bind payload " + err.Error(), nil))
@@ -92,4 +90,25 @@ func (handler *UserController) DeleteUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("delete Fail to Delete akun User", nil))
 	}
 	return c.JSON(http.StatusOK, utils.SuccessWhitoutResponse("Success delete akun User"))
+}
+
+func (handler *UserController) UpdateUser(c echo.Context) error {
+	id := middlewares.ExtracTokenUserId(c)
+	errId := handler.userService.GetId(id)
+	if errId != nil {
+		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("fail to id user not found"))
+	}
+
+	update := features.UserEntity{}
+	if err := c.Bind(&update); err != nil {
+		if err == echo.ErrBadRequest {
+			return c.JSON(http.StatusBadRequest, utils.FailResponse("error bind payload " + err.Error(), nil))
+		} 
+	}
+
+	errUpdate := handler.userService.Update(update, uint(id))
+	if errUpdate != nil {
+		return c.JSON(http.StatusInternalServerError, utils.FailResponse("status internal error", nil))
+	}
+	return c.JSON(http.StatusOK, utils.SuccessWhitoutResponse("Success update akun User"))
 }
