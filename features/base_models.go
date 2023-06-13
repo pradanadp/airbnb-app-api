@@ -1,6 +1,8 @@
 package features
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type User struct {
 	gorm.Model
@@ -13,9 +15,11 @@ type User struct {
 	BirthDate      string     `gorm:"column:birth_date;not null"`
 	Address        string     `gorm:"column:address;not null"`
 	Gender         string     `gorm:"type:enum('male','female');default:'male';column:gender;not null"`
+	Role           string     `gorm:"type:enum('hoster','user');default:'user';column:role;not null"`
 	Bio            string     `gorm:"column:bio;not null"`
 	HostingCount   uint       `gorm:"column:hosting_count"`
 	BookingCount   uint       `gorm:"column:booking_count"`
+	HostDocument   string     `gorm:"column:host_document"`
 	ProfilePicture string     `gorm:"column:profile_picture"`
 	Homestays      []Homestay `gorm:"foreignKey:HostID"`
 	Bookings       []Booking  `gorm:"foreignKey:CustomerID"`
@@ -47,13 +51,14 @@ type Image struct {
 
 type Booking struct {
 	gorm.Model
+	OrderID      string   `gorm:"column:order_id;not null"`
 	CustomerID   uint     `gorm:"column:customer_id;not null"`
 	Customer     User     `gorm:"foreignKey:CustomerID"`
 	HomestayID   uint     `gorm:"column:homestay_id;not null"`
 	Homestay     Homestay `gorm:"foreignKey:HomestayID"`
 	CheckInDate  string   `gorm:"column:check_in_date;not null"`
-	CheckOutdate string   `gorm:"column:check_out_date;not null"`
-	Status       string   `gorm:"type:enum('available','reserved','booked');default:'available';column:booking_status;not null"`
+	CheckOutDate string   `gorm:"column:check_out_date;not null"`
+	Status       string   `gorm:"type:enum('reserved','booked');column:booking_status;not null"`
 	Duration     uint     `gorm:"column:duration;not null"`
 	TotalPrice   float64  `gorm:"column:total_price;not null"`
 }
@@ -70,7 +75,7 @@ type Review struct {
 
 type Payment struct {
 	gorm.Model
-	BookingID uint    `gorm:"column:payment_id;not null"`
+	BookingID uint    `gorm:"column:booking_id;unique;not null"`
 	Booking   Booking `gorm:"foreignKey:BookingID"`
 	Name      string  `gorm:"column:payment_name;not null"`
 	Status    string  `gorm:"column:payment_status;not null"`

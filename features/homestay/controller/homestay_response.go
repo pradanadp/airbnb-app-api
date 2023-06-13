@@ -9,6 +9,7 @@ type HomestayResponse struct {
 	Title       string           `json:"title,omitempty"`
 	Description string           `json:"description,omitempty"`
 	Location    string           `json:"location,omitempty"`
+	Address     string           `json:"address,omitempty"`
 	Price       float64          `json:"price,omitempty"`
 	Facilities  string           `json:"facilities,omitempty"`
 	Rating      float64          `json:"rating"`

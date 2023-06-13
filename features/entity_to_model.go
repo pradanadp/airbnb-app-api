@@ -11,9 +11,11 @@ func UserEntityToModel(user UserEntity) User {
 		BirthDate:      user.BirthDate,
 		Address:        user.Address,
 		Gender:         user.Gender,
+		Role:           user.Role,
 		Bio:            user.Bio,
 		HostingCount:   user.HostingCount,
 		BookingCount:   user.BookingCount,
+		HostDocument:   user.HostDocument,
 		ProfilePicture: user.ProfilePicture,
 	}
 }
@@ -41,8 +43,9 @@ func BookingEntityToModel(booking BookingEntity) Booking {
 	return Booking{
 		CustomerID:   booking.CustomerID,
 		HomestayID:   booking.HomestayID,
+		OrderID:      booking.OrderID,
 		CheckInDate:  booking.CheckInDate,
-		CheckOutdate: booking.CheckOutdate,
+		CheckOutDate: booking.CheckOutDate,
 		Status:       booking.Status,
 		Duration:     booking.Duration,
 		TotalPrice:   booking.TotalPrice,
