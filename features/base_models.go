@@ -6,17 +6,17 @@ import (
 
 type User struct {
 	gorm.Model
-	FirstName      string     `gorm:"column:first_name;not null"`
-	LastName       string     `gorm:"column:last_name;not null"`
-	Username       string     `gorm:"column:username;unique;not null"`
+	FirstName      string     `gorm:"column:first_name"`
+	LastName       string     `gorm:"column:last_name"`
+	Username       string     `gorm:"column:username;unique"`
 	Email          string     `gorm:"column:email;unique;not null"`
-	Password       string     `gorm:"column:password;not null"`
+	Password       string     `gorm:"column:password"`
 	Phone          string     `gorm:"column:phone;unique;not null"`
-	BirthDate      string     `gorm:"column:birth_date;not null"`
+	BirthDate      string     `gorm:"column:birth_date"`
 	Address        string     `gorm:"column:address;not null"`
 	Gender         string     `gorm:"type:enum('male','female');default:'male';column:gender;not null"`
 	Role           string     `gorm:"type:enum('hoster','user');default:'user';column:role;not null"`
-	Bio            string     `gorm:"column:bio;not null"`
+	Bio            string     `gorm:"column:bio"`
 	HostingCount   uint       `gorm:"column:hosting_count"`
 	BookingCount   uint       `gorm:"column:booking_count"`
 	HostDocument   string     `gorm:"column:host_document"`
