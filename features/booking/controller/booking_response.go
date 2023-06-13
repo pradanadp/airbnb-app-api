@@ -5,6 +5,8 @@ import (
 )
 
 type BookingResponse struct {
+	BookingID    uint    `json:"booking_id,omitempty"`
+	OrderID      string  `json:"order_id,omitempty"`
 	CustomerID   uint    `json:"customer_id,omitempty"`
 	HomestayID   uint    `json:"homestay_id,omitempty"`
 	CheckInDate  string  `json:"check_in_date,omitempty"`
@@ -16,6 +18,8 @@ type BookingResponse struct {
 
 func BookingEntityToResponse(booking models.BookingEntity) BookingResponse {
 	return BookingResponse{
+		BookingID:    booking.ID,
+		OrderID:      booking.OrderID,
 		CustomerID:   booking.CustomerID,
 		HomestayID:   booking.HomestayID,
 		CheckInDate:  booking.CheckInDate,

@@ -41,41 +41,41 @@ func (bs *bookingService) CheckAvailability(homestayID uint, checkInDate time.Ti
 }
 
 // CreateBooking implements booking.BookingService.
-func (bs *bookingService) CreateBooking(booking models.BookingEntity) (uint, error) {
+func (bs *bookingService) CreateBooking(booking models.BookingEntity) (uint, string, error) {
 	checkInDate, err := time.Parse("2006-01-02", booking.CheckInDate)
 	if err != nil {
-		return 0, errors.Wrap(err, "failed to parse booking check-in date")
+		return 0, "", errors.Wrap(err, "failed to parse booking check-in date")
 	}
 	isAvailable, err := bs.CheckAvailability(booking.HomestayID, checkInDate)
 
 	if !isAvailable {
 		if err != nil {
-			return 0, err
+			return 0, "", err
 		}
 	}
 
 	switch {
 	case booking.CustomerID == 0:
-		return 0, errors.New("error, customer id is required")
+		return 0, "", errors.New("error, customer id is required")
 	case booking.HomestayID == 0:
-		return 0, errors.New("error, homestay id is required")
+		return 0, "", errors.New("error, homestay id is required")
 	case booking.CheckInDate == "":
-		return 0, errors.New("error, check in date is required")
+		return 0, "", errors.New("error, check in date is required")
 	case booking.CheckOutDate == "":
-		return 0, errors.New("error, check out date is required")
+		return 0, "", errors.New("error, check out date is required")
 	case booking.Duration == 0:
-		return 0, errors.New("error, duration is required")
+		return 0, "", errors.New("error, duration is required")
 	case booking.TotalPrice == 0:
-		return 0, errors.New("error, total price is required")
+		return 0, "", errors.New("error, total price is required")
 	}
 
 	booking.Status = "reserved"
-	bookingID, err := bs.bookingRepository.Insert(booking)
+	bookingID, orderID, err := bs.bookingRepository.Insert(booking)
 	if err != nil {
-		return 0, fmt.Errorf("%v", err)
+		return 0, "", fmt.Errorf("%v", err)
 	}
 
-	return bookingID, nil
+	return bookingID, orderID, nil
 }
 
 // DeleteBooking implements booking.BookingService.

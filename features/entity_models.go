@@ -15,9 +15,11 @@ type UserEntity struct {
 	BirthDate      string           `json:"birth_date,omitempty" form:"birth_date"`
 	Address        string           `json:"address,omitempty" form:"address"`
 	Gender         string           `json:"gender,omitempty" form:"gender"`
+	Role           string           `json:"role,omitempty" form:"role"`
 	Bio            string           `json:"bio,omitempty" form:"bio"`
 	HostingCount   uint             `json:"hosting_count,omitempty" form:"hosting_count"`
 	BookingCount   uint             `json:"booking_count,omitempty" form:"booking_count"`
+	HostDocument   string           `json:"host_document,omitempty" form:"host_document"`
 	ProfilePicture string           `json:"profile_picture,omitempty" form:"profile_picture"`
 	CreatedAt      time.Time        `json:"created_at,omitempty"`
 	UpdatedAt      time.Time        `json:"updated_at,omitempty"`
@@ -58,6 +60,7 @@ type ImageEntity struct {
 
 type BookingEntity struct {
 	ID           uint           `json:"booking_id,omitempty" form:"booking_id"`
+	OrderID      string         `json:"order_id,omitempty"`
 	CustomerID   uint           `json:"customer_id,omitempty" form:"customer_id"`
 	Customer     UserEntity     `json:"customer,omitempty"`
 	HomestayID   uint           `json:"homestay_id,omitempty" form:"homestay_id"`

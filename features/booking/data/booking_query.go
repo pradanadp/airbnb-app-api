@@ -3,6 +3,7 @@ package data
 import (
 	models "be-api/features"
 	bookingInterface "be-api/features/booking"
+	"be-api/utils"
 
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -38,13 +39,19 @@ func (bq *bookingQuery) Delete(bookingID uint) error {
 }
 
 // Insert implements booking.BookingRepository.
-func (bq *bookingQuery) Insert(booking models.BookingEntity) (uint, error) {
+func (bq *bookingQuery) Insert(booking models.BookingEntity) (uint, string, error) {
 	bookingModel := models.BookingEntityToModel(booking)
+
+	orderID, err := utils.GenerateUUID()
+	if err != nil {
+		return 0, "", errors.New("failed to generate ID")
+	}
+	bookingModel.OrderID = orderID
 
 	// Insert the booking and the associated payment
 	bookingCreateOpr := bq.db.Create(&bookingModel)
 	if bookingCreateOpr.Error != nil {
-		return 0, bookingCreateOpr.Error
+		return 0, "", bookingCreateOpr.Error
 	}
 
 	payment := models.Payment{
@@ -55,10 +62,10 @@ func (bq *bookingQuery) Insert(booking models.BookingEntity) (uint, error) {
 	// Insert the payment
 	paymentCreateOpr := bq.db.Create(&payment)
 	if paymentCreateOpr.Error != nil {
-		return 0, paymentCreateOpr.Error
+		return 0, "", paymentCreateOpr.Error
 	}
 
-	return bookingModel.ID, nil
+	return bookingModel.ID, orderID, nil
 }
 
 func New(db *gorm.DB) bookingInterface.BookingRepository {

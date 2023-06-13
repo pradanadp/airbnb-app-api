@@ -4,6 +4,7 @@ import (
 	models "be-api/features"
 	bookingInterface "be-api/features/booking"
 	"be-api/utils"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -27,7 +28,7 @@ func (bc *bookingController) CreateBooking(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("failed to bind booking data", nil))
 	}
 
-	bookingID, err := bc.bookingService.CreateBooking(booking)
+	bookingID, orderID, err := bc.bookingService.CreateBooking(booking)
 	if err != nil {
 		if strings.Contains(err.Error(), "insert failed") {
 			return c.JSON(http.StatusBadRequest, utils.FailResponse(err.Error(), nil))
@@ -36,8 +37,12 @@ func (bc *bookingController) CreateBooking(c echo.Context) error {
 		}
 	}
 
-	booking.ID = bookingID
-	homestayResponse := BookingEntityToResponse(booking)
+	fmt.Println(bookingID)
+	fmt.Println(orderID)
 
-	return c.JSON(http.StatusOK, utils.SuccessResponse("booking created successfully, complete the payment immediately", homestayResponse))
+	booking.ID = bookingID
+	booking.OrderID = orderID
+	bookingResponse := BookingEntityToResponse(booking)
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("booking created successfully, complete the payment immediately", bookingResponse))
 }
