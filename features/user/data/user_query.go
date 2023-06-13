@@ -14,6 +14,26 @@ type UserData struct {
 	db *gorm.DB
 }
 
+// Upgrade implements user.UserDataInterface
+func (repo *UserData) Upgrade(input features.UserEntity, id uint) error {
+	var user features.User
+	tx := repo.db.Where("id = ?", id).First(&user)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	updatedUser := features.UserEntityToModel(input)
+	if updatedUser.NamaPemilik == "" && updatedUser.KTPFile == "" && updatedUser.NIBFile==""{
+		return errors.New("data tidak boleh kosong")
+	}
+	updatedUser.Role = "hoster"
+	updateOpr := repo.db.Model(&user).Updates(updatedUser)
+	if updateOpr.Error != nil {
+		return errors.New(updateOpr.Error.Error() + ", failed to update user")
+	}
+	return nil
+}
+
 // Update implements user.UserDataInterface
 func (repo *UserData) Update(input features.UserEntity, id uint) error {
 	var user features.User
@@ -22,12 +42,12 @@ func (repo *UserData) Update(input features.UserEntity, id uint) error {
 		return tx.Error
 	}
 
-	updatedUser:= features.UserEntityToModel(input)
+	updatedUser := features.UserEntityToModel(input)
 	updateOpr := repo.db.Model(&user).Updates(updatedUser)
 	if updateOpr.Error != nil {
 		return errors.New(updateOpr.Error.Error() + ", failed to update user")
-	}	
-	return nil	
+	}
+	return nil
 }
 
 // SelectId implements user.UserDataInterface
@@ -71,10 +91,10 @@ func (repo *UserData) Insert(input features.UserEntity) error {
 	}
 	input.Password = hashPassword
 	userData := features.UserEntityToModel(input)
-	if userData.Username == ""{
-		str :=strconv.Itoa(15)
-		userData.Username = userData.FirstName+"."+userData.LastName+str
-		
+	if userData.Username == "" {
+		str := strconv.Itoa(15)
+		userData.Username = userData.FirstName + "." + userData.LastName + str
+
 		tx := repo.db.Create(&userData)
 		if tx.Error != nil {
 			return tx.Error
@@ -83,7 +103,6 @@ func (repo *UserData) Insert(input features.UserEntity) error {
 		}
 		return nil
 	}
-
 
 	tx := repo.db.Create(&userData)
 	if tx.Error != nil {
