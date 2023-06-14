@@ -3,6 +3,8 @@ package service
 import (
 	"be-api/features"
 	imageInterface "be-api/features/image"
+	"errors"
+	"fmt"
 )
 
 type imageService struct {
@@ -11,7 +13,19 @@ type imageService struct {
 
 // CreateImage implements image.ImageService.
 func (is *imageService) CreateImage(image features.ImageEntity) (uint, error) {
-	panic("unimplemented")
+	switch {
+	case image.HomestayID == 0:
+		return 0, errors.New("error, homestay ID is required")
+	case image.Link == "":
+		return 0, errors.New("error, image link is required")
+	}
+
+	imageID, err := is.imageRepository.Insert(image)
+	if err != nil {
+		return 0, fmt.Errorf("%v", err)
+	}
+
+	return imageID, nil
 }
 
 // DeleteImage implements image.ImageService.
