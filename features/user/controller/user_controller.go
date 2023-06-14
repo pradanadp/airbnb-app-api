@@ -89,7 +89,8 @@ func (handler *UserController) GetUser(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("data tidak tersedia ", nil))
 	}
-	mapUser := EntityToResponse(user)
+	user.FullName = user.FirstName+" "+user.LastName
+	mapUser := EntityToReadResponse(user)
 	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser))
 }
 

@@ -8,6 +8,7 @@ type UserEntity struct {
 	ID             uint             `json:"user_id,omitempty" form:"user_id"`
 	FirstName      string           `json:"first_name,omitempty" form:"first_name"`
 	LastName       string           `json:"last_name,omitempty" form:"last_name"`
+	FullName       string     		`json:"full_name,omitempty" form:"full_name"`
 	Username       string           `json:"username,omitempty" form:"username"`
 	Email          string           `json:"email,omitempty" form:"email"`
 	Password       string           `json:"password,omitempty" form:"password"`
