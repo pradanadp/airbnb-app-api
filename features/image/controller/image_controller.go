@@ -41,7 +41,13 @@ func (ic *imageController) UploadHomestayPhotos(c echo.Context) error {
 	files := form.File["files"]
 	for _, file := range files {
 		path := "homestay-photos/" + file.Filename
-		err := awsService.UploadFile(path, file.Filename)
+		src, err := file.Open()
+		if err != nil {
+			return err
+		}
+		defer src.Close()
+
+		err = awsService.UploadFile(path, src)
 		if err != nil {
 			return err
 		}
@@ -57,7 +63,6 @@ func (ic *imageController) UploadHomestayPhotos(c echo.Context) error {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, utils.FailResponse("failed to create image", nil))
 		}
-
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{

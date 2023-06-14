@@ -4,7 +4,7 @@ import (
 	appConfig "be-api/app/config"
 	"context"
 	"log"
-	"os"
+	"mime/multipart"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
@@ -21,14 +21,8 @@ type AWSService struct {
 	S3Client *s3.Client
 }
 
-func (awsSvc AWSService) UploadFile(key, filename string) error {
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Println("Error while opening the file", err)
-	}
-	defer file.Close()
-
-	_, err = awsSvc.S3Client.PutObject(context.TODO(), &s3.PutObjectInput{
+func (awsSvc AWSService) UploadFile(key string, file multipart.File) error {
+	_, err := awsSvc.S3Client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(AWS_S3_BUCKET),
 		Key:    aws.String(key),
 		Body:   file,
@@ -39,7 +33,6 @@ func (awsSvc AWSService) UploadFile(key, filename string) error {
 
 	return err
 }
-
 func ConfigS3(cfg *appConfig.AppConfig) AWSService {
 	creds := credentials.NewStaticCredentialsProvider(
 		cfg.AWS_ACCESS_KEY_ID, cfg.AWS_SECRET_ACCESS_KEY, "",

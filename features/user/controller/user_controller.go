@@ -176,7 +176,13 @@ func (handler *UserController) UploadProfilePicture(c echo.Context) error {
 	}
 
 	path := "profile-picture/" + file.Filename
-	err = awsService.UploadFile(path, file.Filename)
+	fileContent, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer fileContent.Close()
+
+	err = awsService.UploadFile(path, fileContent)
 	if err != nil {
 		return err
 	}
@@ -209,7 +215,13 @@ func (handler *UserController) UploadHostDoc(c echo.Context) error {
 	}
 
 	path := "host-doc/" + file.Filename
-	err = awsService.UploadFile(path, file.Filename)
+	fileContent, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer fileContent.Close()
+
+	err = awsService.UploadFile(path, fileContent)
 	if err != nil {
 		return err
 	}
