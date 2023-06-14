@@ -2,6 +2,7 @@ package database
 
 import (
 	models "be-api/features"
+	"be-api/utils"
 
 	"gorm.io/gorm"
 )
@@ -86,6 +87,7 @@ func InitUsersData(db *gorm.DB) {
 	}
 
 	for _, user := range users {
+		user.Password, _ = utils.HashPasword(user.Password)
 		db.Create(&user)
 	}
 }
