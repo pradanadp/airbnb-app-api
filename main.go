@@ -15,8 +15,8 @@ func main() {
 	database.InitialMigration(mysql)
 
 	// database.InitUsersData(mysql)
-	database.InitHomestaysData(mysql)
-	// database.InitReviewsData(mysql)
+	// database.InitHomestaysData(mysql)
+	database.InitReviewsData(mysql)
 
 	e := echo.New()
 
