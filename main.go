@@ -4,7 +4,6 @@ import (
 	"be-api/app/config"
 	"be-api/app/database"
 	"be-api/app/router"
-	"be-api/features/image/controller"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -28,7 +27,6 @@ func main() {
 	}))
 
 	router.InitRouter(mysql, e)
-	e.POST("/users/images", controller.UploadHostDoc)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

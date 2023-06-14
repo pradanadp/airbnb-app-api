@@ -3,6 +3,7 @@ package data
 import (
 	models "be-api/features"
 	imageInterface "be-api/features/image"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -18,7 +19,18 @@ func (iq *imageQuery) Delete(imageID uint) error {
 
 // Insert implements image.ImageRepository.
 func (iq *imageQuery) Insert(image models.ImageEntity) (uint, error) {
-	panic("unimplemented")
+	imageModel := models.ImageEntityToModel(image)
+
+	createOpr := iq.db.Create(&imageModel)
+	if createOpr.Error != nil {
+		return 0, createOpr.Error
+	}
+
+	if createOpr.RowsAffected == 0 {
+		return 0, errors.New("failed to insert, row affected is 0")
+	}
+
+	return imageModel.ID, nil
 }
 
 // Select implements image.ImageRepository.
