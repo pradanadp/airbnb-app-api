@@ -116,7 +116,7 @@ func main() {
 	// Optional: here is how if you want to set append payment notification globally
 	midtrans.SetPaymentAppendNotification("https://midtrans-java.herokuapp.com/notif/append1")
 	// Optional: here is how if you want to set override payment notification globally
-	midtrans.SetPaymentOverrideNotification("https://midtrans-java.herokuapp.com/notif/override")
+	// midtrans.SetPaymentOverrideNotification("https://midtrans-java.herokuapp.com/notif/override")
 
 	// 2. ChargeTransaction with global config
 	chargeWithMapGlobalConfig()
@@ -196,4 +196,6 @@ func notification(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte("ok"))
+
+
 }
