@@ -70,7 +70,7 @@ func (handler *UserController) AddUser(c echo.Context) error {
 	if err != nil {
 		if strings.Contains(err.Error(), "validation") {
 			return c.JSON(http.StatusBadRequest, utils.FailResponse("error validation payload "+err.Error(), nil))
-		} else if strings.Contains(err.Error(), "Duplicate entry") {
+		} else{
 			return c.JSON(http.StatusBadRequest, utils.FailResponse("email tidak tersedia "+err.Error(), nil))
 		}
 	}
