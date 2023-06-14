@@ -14,12 +14,14 @@ var (
 )
 
 type AppConfig struct {
-	DB_USERNAME string
-	DB_PASSWORD string
-	DB_HOSTNAME string
-	DB_PORT     int
-	DB_NAME     string
-	jwtKey      string
+	DB_USERNAME           string
+	DB_PASSWORD           string
+	DB_HOSTNAME           string
+	DB_PORT               int
+	DB_NAME               string
+	AWS_ACCESS_KEY_ID     string
+	AWS_SECRET_ACCESS_KEY string
+	jwtKey                string
 }
 
 func InitConfig() *AppConfig {
@@ -55,6 +57,14 @@ func ReadEnv() *AppConfig {
 		app.DB_NAME = val
 		isRead = false
 	}
+	if val, found := os.LookupEnv("AWS_ACCESS_KEY_ID"); found {
+		app.AWS_ACCESS_KEY_ID = val
+		isRead = false
+	}
+	if val, found := os.LookupEnv("AWS_SECRET_ACCESS_KEY"); found {
+		app.AWS_SECRET_ACCESS_KEY = val
+		isRead = false
+	}
 
 	if isRead {
 		viper.AddConfigPath(".")
@@ -73,6 +83,8 @@ func ReadEnv() *AppConfig {
 		app.DB_HOSTNAME = viper.Get("DBHOST").(string)
 		app.DB_PORT, _ = strconv.Atoi(viper.Get("DBPORT").(string))
 		app.DB_NAME = viper.Get("DBNAME").(string)
+		app.AWS_ACCESS_KEY_ID = viper.Get("AWS_ACCESS_KEY_ID").(string)
+		app.AWS_SECRET_ACCESS_KEY = viper.Get("AWS_SECRET_ACCESS_KEY").(string)
 	}
 
 	SECRET_JWT = app.jwtKey
