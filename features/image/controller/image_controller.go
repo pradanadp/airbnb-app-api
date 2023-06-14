@@ -41,7 +41,7 @@ func (ic *imageController) UploadHomestayPhotos(c echo.Context) error {
 	files := form.File["files"]
 	for _, file := range files {
 		path := "homestay-photos/" + file.Filename
-		err = awsService.UploadFile(path, file.Filename)
+		err := awsService.UploadFile(path, file.Filename)
 		if err != nil {
 			return err
 		}
