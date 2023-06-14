@@ -2,9 +2,11 @@ package controller
 
 import (
 	"be-api/app/middlewares"
+	aws "be-api/aws"
 	"be-api/features"
 	"be-api/features/user"
 	"be-api/utils"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -47,15 +49,14 @@ func (handler *UserController) LoginUser(c echo.Context) error {
 	}
 	mapUser := EntityToResponse(user)
 
-
 	accessToken, err := middlewares.CreateToken(userId)
 	if err != nil {
 		return err
 	}
-	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully",map[string]any{
-		"accessToken": accessToken, 
-		"user": mapUser,
- } ))
+	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", map[string]any{
+		"accessToken": accessToken,
+		"user":        mapUser,
+	}))
 }
 
 func (handler *UserController) AddUser(c echo.Context) error {
@@ -63,16 +64,17 @@ func (handler *UserController) AddUser(c echo.Context) error {
 	payload := features.UserEntity{}
 	if err := c.Bind(&payload); err != nil {
 		if err == echo.ErrBadRequest {
-			return c.JSON(http.StatusBadRequest, utils.FailResponse("error bind payload " + err.Error(), nil))
-		} 
+			return c.JSON(http.StatusBadRequest, utils.FailResponse("error bind payload "+err.Error(), nil))
+		}
 	}
 
-	id,err := handler.userService.AddUser(payload); if err != nil {
+	id, err := handler.userService.AddUser(payload)
+	if err != nil {
 		if strings.Contains(err.Error(), "validation") {
-			return c.JSON(http.StatusBadRequest, utils.FailResponse("error validation payload " + err.Error(), nil))
+			return c.JSON(http.StatusBadRequest, utils.FailResponse("error validation payload "+err.Error(), nil))
 		} else if strings.Contains(err.Error(), "Duplicate entry") {
-			return c.JSON(http.StatusBadRequest, utils.FailResponse("email tidak tersedia " + err.Error(), nil))
-		}                   
+			return c.JSON(http.StatusBadRequest, utils.FailResponse("email tidak tersedia "+err.Error(), nil))
+		}
 	}
 	user, err := handler.userService.GetUser(int(id))
 	if err != nil {
@@ -80,7 +82,7 @@ func (handler *UserController) AddUser(c echo.Context) error {
 	}
 	mapUser := EntityToResponse(user)
 
-	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser ))
+	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser))
 }
 
 func (handler *UserController) GetUser(c echo.Context) error {
@@ -89,7 +91,7 @@ func (handler *UserController) GetUser(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("data tidak tersedia ", nil))
 	}
-	user.FullName = user.FirstName+" "+user.LastName
+	user.FullName = user.FirstName + " " + user.LastName
 	mapUser := EntityToReadResponse(user)
 	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser))
 }
@@ -118,22 +120,22 @@ func (handler *UserController) UpdateUser(c echo.Context) error {
 	update := features.UserEntity{}
 	if err := c.Bind(&update); err != nil {
 		if err == echo.ErrBadRequest {
-			return c.JSON(http.StatusBadRequest, utils.FailResponse("error bind payload " + err.Error(), nil))
-		} 
+			return c.JSON(http.StatusBadRequest, utils.FailResponse("error bind payload "+err.Error(), nil))
+		}
 	}
 
 	errUpdate := handler.userService.Update(update, uint(id))
 	if errUpdate != nil {
 		return c.JSON(http.StatusInternalServerError, utils.FailResponse("status internal error", nil))
 	}
-	
+
 	user, err := handler.userService.GetUser(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("data tidak tersedia ", nil))
 	}
 	mapUser := EntityToResponse(user)
 
-	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser ))
+	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser))
 
 }
 
@@ -147,8 +149,8 @@ func (handler *UserController) UpgradeUser(c echo.Context) error {
 	upgrade := features.UserEntity{}
 	if err := c.Bind(&upgrade); err != nil {
 		if err == echo.ErrBadRequest {
-			return c.JSON(http.StatusBadRequest, utils.FailResponse("error bind payload " + err.Error(), nil))
-		} 
+			return c.JSON(http.StatusBadRequest, utils.FailResponse("error bind payload "+err.Error(), nil))
+		}
 	}
 
 	errUpgrade := handler.userService.UpgradeUser(upgrade, uint(id))
@@ -162,5 +164,85 @@ func (handler *UserController) UpgradeUser(c echo.Context) error {
 	}
 	mapUser := EntityToResponse(user)
 
-	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser ))
+	return c.JSON(http.StatusOK, utils.SuccessResponse("successfully", mapUser))
+}
+
+func (handler *UserController) UploadProfilePicture(c echo.Context) error {
+	awsService := aws.InitS3()
+
+	file, err := c.FormFile("profile_picture")
+	if err != nil {
+		return err
+	}
+
+	path := "profile-picture/" + file.Filename
+	fileContent, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer fileContent.Close()
+
+	err = awsService.UploadFile(path, fileContent)
+	if err != nil {
+		return err
+	}
+
+	id := middlewares.ExtracTokenUserId(c)
+	errId := handler.userService.GetId(id)
+	if errId != nil {
+		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("User ID not found"))
+	}
+
+	var updatedUser features.UserEntity
+	updatedUser.ProfilePicture = fmt.Sprintf("https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/profile-picture/%v", file.Filename)
+
+	errUpdate := handler.userService.Update(updatedUser, uint(id))
+	if errUpdate != nil {
+		return c.JSON(http.StatusInternalServerError, utils.FailResponse("status internal error", nil))
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "profile picture updated successfully",
+		"data":    updatedUser.ProfilePicture,
+	})
+}
+
+func (handler *UserController) UploadHostDoc(c echo.Context) error {
+	awsService := aws.InitS3()
+
+	file, err := c.FormFile("host_document")
+	if err != nil {
+		return err
+	}
+
+	path := "host-doc/" + file.Filename
+	fileContent, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer fileContent.Close()
+
+	err = awsService.UploadFile(path, fileContent)
+	if err != nil {
+		return err
+	}
+
+	id := middlewares.ExtracTokenUserId(c)
+	errId := handler.userService.GetId(id)
+	if errId != nil {
+		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("User ID not found"))
+	}
+
+	var updatedUser features.UserEntity
+	updatedUser.ProfilePicture = fmt.Sprintf("https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/host-doc/%v", file.Filename)
+
+	errUpdate := handler.userService.Update(updatedUser, uint(id))
+	if errUpdate != nil {
+		return c.JSON(http.StatusInternalServerError, utils.FailResponse("status internal error", nil))
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "host document added successfully",
+		"data":    updatedUser.ProfilePicture,
+	})
 }

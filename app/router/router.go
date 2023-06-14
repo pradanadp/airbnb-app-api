@@ -9,6 +9,9 @@ import (
 	homestayControllerInit "be-api/features/homestay/controller"
 	homestayRepoInit "be-api/features/homestay/data"
 	homestayServiceInit "be-api/features/homestay/service"
+	imageControllerInit "be-api/features/image/controller"
+	imageRepoInit "be-api/features/image/data"
+	imageServiceInit "be-api/features/image/service"
 
 	userController "be-api/features/user/controller"
 	userData "be-api/features/user/data"
@@ -28,6 +31,11 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	homestayService := homestayServiceInit.New(homestayRepo)
 	homestayControllerAPI := homestayControllerInit.New(homestayService)
 
+	// Image router
+	imageRepo := imageRepoInit.New(db)
+	imageService := imageServiceInit.New(imageRepo)
+	imageControllerAPI := imageControllerInit.New(imageService)
+
 	homestaysGroup := e.Group("/homestays")
 	{
 		homestaysGroup.POST("", homestayControllerAPI.CreateHomestay)
@@ -35,6 +43,7 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 		homestaysGroup.GET("/:homestay_id", homestayControllerAPI.ReadHomestay)
 		homestaysGroup.PUT("/:homestay_id", homestayControllerAPI.UpdateHomestay)
 		homestaysGroup.DELETE("/:homestay_id", homestayControllerAPI.DeleteHomestay)
+		homestaysGroup.POST("/:homestay_id/images", imageControllerAPI.UploadHomestayPhotos)
 	}
 
 	// Booking router
@@ -59,13 +68,17 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	e.PUT("/users", UserController.UpdateUser, middlewares.JWTMiddleware())
 	e.PUT("/upgrades", UserController.UpgradeUser, middlewares.JWTMiddleware())
 
-
 	//review Router
 	ReviewData := reviewData.New(db)
 	reviewService := reviewService.New(ReviewData)
 	ReviewController := reviewController.New(reviewService)
 
+<<<<<<< HEAD
 	e.POST("/reviews", ReviewController.AddReview,middlewares.JWTMiddleware())
 	e.DELETE("/reviews/:review_id", ReviewController.DeleteReview,middlewares.JWTMiddleware())
 	e.GET("/homestays/:homestay_id/reviews", ReviewController.GetAllReview)
+=======
+	e.POST("/reviews", ReviewController.AddReview, middlewares.JWTMiddleware())
+	e.DELETE("/reviews/:review_id", ReviewController.DeleteReview, middlewares.JWTMiddleware())
+>>>>>>> main
 }

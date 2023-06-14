@@ -15,7 +15,7 @@ type homestayService struct {
 func (hs *homestayService) CreateHomestay(homestay models.HomestayEntity) (uint, error) {
 	switch {
 	case homestay.HostID == 0:
-		return 0, errors.New("error, host is id required")
+		return 0, errors.New("error, host id is required")
 	case homestay.Title == "":
 		return 0, errors.New("error, title is required")
 	case homestay.Description == "":

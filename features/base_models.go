@@ -33,7 +33,7 @@ type Homestay struct {
 	gorm.Model
 	HostID      uint      `gorm:"column:host_id;not null"`
 	Host        User      `gorm:"foreignKey:HostID"`
-	Title       string    `gorm:"column:title;not null"`
+	Title       string    `gorm:"column:title;unique;not null"`
 	Description string    `gorm:"column:description;not null"`
 	Location    string    `gorm:"column:location;not null"`
 	Address     string    `gorm:"column:address;not null"`

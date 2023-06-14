@@ -4,7 +4,6 @@ import (
 	"be-api/app/config"
 	"be-api/app/database"
 	"be-api/app/router"
-	"be-api/features/image/controller"
 	"be-api/midtran"
 	"fmt"
 
@@ -17,9 +16,9 @@ func main() {
 	mysql := database.InitMysql(cfg)
 	database.InitialMigration(mysql)
 
-	database.InitUsersData(mysql)
-	database.InitHomestaysData(mysql)
-	database.InitReviewsData(mysql)
+	// database.InitUsersData(mysql)
+	// database.InitHomestaysData(mysql)
+	// database.InitReviewsData(mysql)
 
 	e := echo.New()
 
@@ -30,7 +29,6 @@ func main() {
 	}))
 
 	router.InitRouter(mysql, e)
-	e.POST("/users/images", controller.UploadHostDoc)
 
 	//cfg := config.InitConfig()
 	response, errMidtrans:=midtran.MitransPayment(cfg)
