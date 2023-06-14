@@ -3,14 +3,14 @@ package controller
 import "be-api/features"
 
 type ResponseUser struct {
-	Id 				 uint
-	UserName 		 string
-	FullName		 string
-	Email    		 string
-	Phone    		 string
-	Address  		 string
-	ProfilePicture   string
-	Role             string      
+	Id 				 uint `json:"user_id,omitempty"`
+	UserName 		 string `json:"user_name,omitempty"`
+	FullName		 string `json:"full_name,omitempty"`
+	Email    		 string `json:"email,omitempty"`
+	Phone    		 string `json:"phone,omitempty"`
+	Address  		 string `json:"address,omitempty"`
+	ProfilePicture   string `json:"profile_picture,omitempty"`
+	Role             string `json:"role,omitempty"`     
 }
 
 
