@@ -42,13 +42,13 @@ func (hq *homestayQuery) Insert(homestay models.HomestayEntity) (uint, error) {
 func (hq *homestayQuery) Select(homestayID uint) (models.HomestayEntity, error) {
 	var homestay models.Homestay
 
-	queryResult := hq.db.Preload("Bookings").Preload("Reviews").Preload("Images").First(&homestay, homestayID)
+	queryResult := hq.db.Preload("bookings").Preload("reviews").Preload("images").First(&homestay, homestayID)
 	if queryResult.Error != nil {
 		return models.HomestayEntity{}, queryResult.Error
 	}
 
 	var rating float64
-	if err := hq.db.Raw("SELECT AVG(ratings) FROM Reviews WHERE homestay_id = ?", homestayID).Scan(&rating).Error; err != nil {
+	if err := hq.db.Raw("SELECT AVG(ratings) FROM reviews WHERE homestay_id = ?", homestayID).Scan(&rating).Error; err != nil {
 		return models.HomestayEntity{}, err
 	}
 	homestay.Rating = rating
@@ -62,7 +62,7 @@ func (hq *homestayQuery) Select(homestayID uint) (models.HomestayEntity, error) 
 func (hq *homestayQuery) SelectAll() ([]models.HomestayEntity, error) {
 	var homestays []models.Homestay
 
-	queryResult := hq.db.Preload("Bookings").Preload("Reviews").Preload("Images").Find(&homestays)
+	queryResult := hq.db.Preload("bookings").Preload("reviews").Preload("images").Find(&homestays)
 
 	if queryResult.Error != nil {
 		return []models.HomestayEntity{}, queryResult.Error
@@ -71,7 +71,7 @@ func (hq *homestayQuery) SelectAll() ([]models.HomestayEntity, error) {
 	var homestayEntities []models.HomestayEntity
 	for _, homestay := range homestays {
 		var rating float64
-		hq.db.Raw("SELECT AVG(ratings) FROM Reviews WHERE homestay_id = ?", homestay.ID).Scan(&rating)
+		hq.db.Raw("SELECT AVG(ratings) FROM reviews WHERE homestay_id = ?", homestay.ID).Scan(&rating)
 		homestay.Rating = rating
 		homestayEntity := models.HomestayModelToEntity(homestay)
 		homestayEntities = append(homestayEntities, homestayEntity)
