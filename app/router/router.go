@@ -73,12 +73,7 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	reviewService := reviewService.New(ReviewData)
 	ReviewController := reviewController.New(reviewService)
 
-<<<<<<< HEAD
 	e.POST("/reviews", ReviewController.AddReview,middlewares.JWTMiddleware())
 	e.DELETE("/reviews/:review_id", ReviewController.DeleteReview,middlewares.JWTMiddleware())
 	e.GET("/homestays/:homestay_id/reviews", ReviewController.GetAllReview)
-=======
-	e.POST("/reviews", ReviewController.AddReview, middlewares.JWTMiddleware())
-	e.DELETE("/reviews/:review_id", ReviewController.DeleteReview, middlewares.JWTMiddleware())
->>>>>>> main
 }
