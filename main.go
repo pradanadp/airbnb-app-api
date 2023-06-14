@@ -16,7 +16,7 @@ func main() {
 
 	// database.InitUsersData(mysql)
 	// database.InitHomestaysData(mysql)
-	database.InitReviewsData(mysql)
+	// database.InitReviewsData(mysql)
 
 	e := echo.New()
 
