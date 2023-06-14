@@ -55,7 +55,7 @@ func (ic *imageController) UploadHomestayPhotos(c echo.Context) error {
 		image := models.ImageEntity{
 			HomestayID: uint(homestayID),
 			Link: fmt.Sprintf(
-				"https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/homestay-photos/%v", file.Filename,
+				"https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/homestay-photos/%s", filepath.Base(file.Filename),
 			),
 		}
 
@@ -105,7 +105,7 @@ func (ic *imageController) UploadHomestayPhotosLocal(c echo.Context) error {
 		image := models.ImageEntity{
 			HomestayID: uint(homestayID),
 			Link: fmt.Sprintf(
-				"https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/%v", dstPath,
+				"https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/%s", filepath.Base(dstPath),
 			),
 		}
 

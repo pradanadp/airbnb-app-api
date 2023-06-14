@@ -5,6 +5,7 @@ import (
 )
 
 type HomestayResponse struct {
+	ID          uint             `json:"homestay_id,omitempty"`
 	HostID      uint             `json:"host_id,omitempty"`
 	Title       string           `json:"title,omitempty"`
 	Description string           `json:"description,omitempty"`
@@ -13,11 +14,12 @@ type HomestayResponse struct {
 	Price       float64          `json:"price,omitempty"`
 	Facilities  string           `json:"facilities,omitempty"`
 	Rating      float64          `json:"rating"`
-	ImageLinks  []ImageResponse  `json:"image_link,omitempty"`
+	Images      []ImageResponse  `json:"image_link,omitempty"`
 	Reviews     []ReviewResponse `json:"reviews,omitempty"`
 }
 
 type ReviewResponse struct {
+	Reviews string  `json:"reviews,omitempty"`
 	Ratings float64 `json:"ratings,omitempty"`
 }
 
@@ -26,10 +28,10 @@ type ImageResponse struct {
 }
 
 func HomestayEntityToResponse(homestay models.HomestayEntity) HomestayResponse {
-	// var reviews []ReviewResponse
-	// for _, review := range homestay.Reviews {
-	// 	reviews = append(reviews, ReviewEntityToResponse(review))
-	// }
+	var reviews []ReviewResponse
+	for _, review := range homestay.Reviews {
+		reviews = append(reviews, ReviewEntityToResponse(review))
+	}
 
 	var imageLinks []ImageResponse
 	for _, link := range homestay.Images {
@@ -37,6 +39,7 @@ func HomestayEntityToResponse(homestay models.HomestayEntity) HomestayResponse {
 	}
 
 	return HomestayResponse{
+		ID:          homestay.ID,
 		HostID:      homestay.HostID,
 		Title:       homestay.Title,
 		Description: homestay.Description,
@@ -44,13 +47,14 @@ func HomestayEntityToResponse(homestay models.HomestayEntity) HomestayResponse {
 		Price:       homestay.Price,
 		Facilities:  homestay.Facilities,
 		Rating:      homestay.Rating,
-		ImageLinks:  imageLinks,
-		// Reviews:     reviews,
+		Images:      imageLinks,
+		Reviews:     reviews,
 	}
 }
 
 func ReviewEntityToResponse(review models.ReviewEntity) ReviewResponse {
 	return ReviewResponse{
+		Reviews: review.Reviews,
 		Ratings: review.Ratings,
 	}
 }
