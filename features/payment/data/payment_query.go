@@ -1,8 +1,10 @@
 package data
 
 import (
+	"be-api/app/config"
 	models "be-api/features"
 	paymentInterface "be-api/features/payment"
+	"be-api/midtran"
 	"errors"
 
 	"gorm.io/gorm"
@@ -24,6 +26,15 @@ func (pq *paymentQuery) Delete(paymentID uint) error {
 
 // Insert implements payment.PaymentRepository.
 func (pq *paymentQuery) Insert(payment models.PaymentEntity) (uint, error) {
+
+	cfg := config.InitConfig()
+	response, errMidtrans:=midtran.MitransPayment(cfg)
+	if errMidtrans != nil{
+		return 0,errMidtrans
+	}
+
+	midtrans :=PaymentMidstransToModel(response)
+
 	paymentModel := models.PaymentEntityToModel(payment)
 	paymentCreateOpr := pq.db.Create(&paymentModel)
 	if paymentCreateOpr.Error != nil {

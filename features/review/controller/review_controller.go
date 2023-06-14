@@ -66,3 +66,28 @@ func (control *ReviewControll) DeleteReview(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, utils.SuccessWhitoutResponse("Success delete akun User"))
 }
+
+func (control *ReviewControll) GetAllReview(c echo.Context) error {
+	Id := c.Param("homestay_id")
+	idConv, errConv := strconv.Atoi(Id)
+	if errConv != nil {
+		if strings.Contains(errConv .Error(), "bind failed") {
+			return c.JSON(http.StatusBadRequest, utils.FailResponse(errConv.Error(), nil))
+		} else {
+			return c.JSON(http.StatusInternalServerError, utils.FailResponse("failed to bind data. "+errConv.Error(), nil))
+		}
+	}
+
+	allReviews, errGetAll := control.reviewControll.GetAll(uint(idConv)) 
+	if errGetAll != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse(errGetAll.Error(), nil))
+	}
+	var mapAllReview []ResponseReviews
+	for _, reviews := range allReviews {
+		mapreview := EntityToResponse(reviews)
+		mapAllReview  = append(mapAllReview , mapreview)
+	}
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("review read review successfully", mapAllReview))
+	
+}

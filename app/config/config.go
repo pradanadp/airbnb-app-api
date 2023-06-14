@@ -22,6 +22,8 @@ type AppConfig struct {
 	AWS_ACCESS_KEY_ID     string
 	AWS_SECRET_ACCESS_KEY string
 	jwtKey                string
+	KEY_SERVER_MIDTRANS	  string
+	KEY_CLIENT_MIDTRANS	  string
 }
 
 func InitConfig() *AppConfig {
@@ -65,6 +67,14 @@ func ReadEnv() *AppConfig {
 		app.AWS_SECRET_ACCESS_KEY = val
 		isRead = false
 	}
+	if val, found := os.LookupEnv("KEY_SERVER_MIDTRANS"); found {
+		app.KEY_SERVER_MIDTRANS = val
+		isRead = false
+	}
+	if val, found := os.LookupEnv("KEY_CLIENT_MIDTRANS"); found {
+		app.KEY_CLIENT_MIDTRANS = val
+		isRead = false
+	}
 
 	if isRead {
 		viper.AddConfigPath(".")
@@ -85,6 +95,8 @@ func ReadEnv() *AppConfig {
 		app.DB_NAME = viper.Get("DBNAME").(string)
 		app.AWS_ACCESS_KEY_ID = viper.Get("AWS_ACCESS_KEY_ID").(string)
 		app.AWS_SECRET_ACCESS_KEY = viper.Get("AWS_SECRET_ACCESS_KEY").(string)
+		app.KEY_SERVER_MIDTRANS = viper.Get("KEY_SERVER_MIDTRANS").(string)
+		app.KEY_CLIENT_MIDTRANS= viper.Get("KEY_CLIENT_MIDTRANS").(string)
 	}
 
 	SECRET_JWT = app.jwtKey

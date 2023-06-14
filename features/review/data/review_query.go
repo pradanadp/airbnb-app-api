@@ -11,6 +11,22 @@ import (
 type ReviewData struct {
 	db *gorm.DB
 }
+// SelectAll implements review.ReviewDataInterface
+func (repo *ReviewData) SelectAll(homestay_id uint) ([]features.ReviewEntity, error) {
+	var riview []features.Review
+	tx := repo.db.Preload("Customer").Preload("Homestay").Find(&riview,"homestay_id=?",homestay_id)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var allRiviews []features.ReviewEntity
+	for _, user := range riview {
+		var data = features.ReviewModelToEntity(user)
+		allRiviews = append(allRiviews, data)
+	}
+
+	return allRiviews, nil
+}
 
 // SelectId implements review.ReviewDataInterface
 func (repo *ReviewData) SelectId(review_id uint) (features.ReviewEntity, error) {
