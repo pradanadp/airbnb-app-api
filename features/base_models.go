@@ -83,3 +83,5 @@ type Payment struct {
 	Name      string  `gorm:"column:payment_name;not null"`
 	Status    string  `gorm:"column:payment_status;not null"`
 }
+
+

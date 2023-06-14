@@ -4,6 +4,8 @@ import (
 	"be-api/app/config"
 	"be-api/app/database"
 	"be-api/app/router"
+	"be-api/midtran"
+	"fmt"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -28,5 +30,12 @@ func main() {
 
 	router.InitRouter(mysql, e)
 
+	//cfg := config.InitConfig()
+	response, errMidtrans:=midtran.MitransPayment(cfg)
+	if errMidtrans != nil{
+		return 
+	}
+	fmt.Println(response)
 	e.Logger.Fatal(e.Start(":8080"))
 }
+

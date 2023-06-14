@@ -5,6 +5,7 @@ import (
 	bookingControllerInit "be-api/features/booking/controller"
 	bookingRepoInit "be-api/features/booking/data"
 	bookingServiceInit "be-api/features/booking/service"
+
 	homestayControllerInit "be-api/features/homestay/controller"
 	homestayRepoInit "be-api/features/homestay/data"
 	homestayServiceInit "be-api/features/homestay/service"
@@ -72,6 +73,12 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	reviewService := reviewService.New(ReviewData)
 	ReviewController := reviewController.New(reviewService)
 
+<<<<<<< HEAD
+	e.POST("/reviews", ReviewController.AddReview,middlewares.JWTMiddleware())
+	e.DELETE("/reviews/:review_id", ReviewController.DeleteReview,middlewares.JWTMiddleware())
+	e.GET("/homestays/:homestay_id/reviews", ReviewController.GetAllReview)
+=======
 	e.POST("/reviews", ReviewController.AddReview, middlewares.JWTMiddleware())
 	e.DELETE("/reviews/:review_id", ReviewController.DeleteReview, middlewares.JWTMiddleware())
+>>>>>>> main
 }

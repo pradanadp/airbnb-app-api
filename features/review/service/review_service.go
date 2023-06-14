@@ -43,6 +43,15 @@ func (service *ReviewService) AddRiview(input features.ReviewEntity, costumer_id
 	return id_homestay, nil
 }
 
+// GetAll implements review.ReviewServiceInterface
+func (service *ReviewService) GetAll(homestay_id uint) ([]features.ReviewEntity, error) {
+	reviewUser, err := service.reviewData.SelectAll(homestay_id)
+	if err != nil {
+		return []features.ReviewEntity{}, err
+	}
+	return reviewUser, err
+}
+
 func New(ReviewData review.ReviewDataInterface) review.ReviewServiceInterface {
 	return &ReviewService{
 		reviewData: ReviewData,
