@@ -95,7 +95,7 @@ func InitUsersData(db *gorm.DB) {
 func InitHomestaysData(db *gorm.DB) {
 	homestays := []models.Homestay{
 		{
-			HostID:      1,
+			HostID:      80,
 			Title:       "Beachfront Villa",
 			Description: "Luxurious villa with stunning ocean views",
 			Location:    "Seaside Resort",
@@ -104,7 +104,7 @@ func InitHomestaysData(db *gorm.DB) {
 			Facilities:  "Swimming Pool, Private Beach Access, Air Conditioning",
 		},
 		{
-			HostID:      1,
+			HostID:      80,
 			Title:       "Mountain Cabin Retreat",
 			Description: "Rustic cabin surrounded by scenic mountains",
 			Location:    "Mountain Village",
@@ -113,7 +113,7 @@ func InitHomestaysData(db *gorm.DB) {
 			Facilities:  "Fireplace, Hiking Trails Nearby, BBQ Area",
 		},
 		{
-			HostID:      2,
+			HostID:      81,
 			Title:       "Cozy City Apartment",
 			Description: "Modern apartment in the heart of the city",
 			Location:    "City Center",
@@ -122,7 +122,7 @@ func InitHomestaysData(db *gorm.DB) {
 			Facilities:  "Wi-Fi, Gym, Concierge Service",
 		},
 		{
-			HostID:      3,
+			HostID:      82,
 			Title:       "Lakeside Cottage",
 			Description: "Charming cottage overlooking a peaceful lake",
 			Location:    "Lakefront",
@@ -131,7 +131,7 @@ func InitHomestaysData(db *gorm.DB) {
 			Facilities:  "Boat Dock, BBQ Area, Fishing Gear",
 		},
 		{
-			HostID:      3,
+			HostID:      82,
 			Title:       "Countryside Farmhouse",
 			Description: "Quaint farmhouse surrounded by scenic fields",
 			Location:    "Rural Area",
@@ -140,7 +140,7 @@ func InitHomestaysData(db *gorm.DB) {
 			Facilities:  "Garden, Animal Petting, Farm-to-Table Experience",
 		},
 		{
-			HostID:      3,
+			HostID:      82,
 			Title:       "Luxury Penthouse Suite",
 			Description: "Opulent penthouse with breathtaking city views",
 			Location:    "Upscale District",
@@ -149,7 +149,7 @@ func InitHomestaysData(db *gorm.DB) {
 			Facilities:  "Infinity Pool, Private Elevator, 24/7 Butler Service",
 		},
 		{
-			HostID:      4,
+			HostID:      83,
 			Title:       "Beachfront Bungalow",
 			Description: "Quaint bungalow steps away from the sandy beach",
 			Location:    "Coastal Village",

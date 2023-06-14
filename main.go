@@ -14,9 +14,9 @@ func main() {
 	mysql := database.InitMysql(cfg)
 	database.InitialMigration(mysql)
 
-	database.InitUsersData(mysql)
+	// database.InitUsersData(mysql)
 	database.InitHomestaysData(mysql)
-	database.InitReviewsData(mysql)
+	// database.InitReviewsData(mysql)
 
 	e := echo.New()
 
