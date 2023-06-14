@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"be-api/app/middlewares"
 	models "be-api/features"
 	homestayInterface "be-api/features/homestay"
 	"be-api/utils"
@@ -23,9 +22,7 @@ func New(service homestayInterface.HomestayService) *homestayController {
 }
 
 func (hc *homestayController) CreateHomestay(c echo.Context) error {
-	userID := middlewares.ExtracTokenUserId(c)
 	var homestay models.HomestayEntity
-	homestay.HostID = uint(userID)
 
 	err := c.Bind(&homestay)
 	if err != nil {
