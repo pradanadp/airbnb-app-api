@@ -92,6 +92,7 @@ func (repo *UserData) Insert(input features.UserEntity) (uint,error) {
 	}
 	input.Password = hashPassword
 	userData := features.UserEntityToModel(input)
+
 	if userData.Username == "" {
 		str := strconv.Itoa(15)
 		userData.Username = userData.FirstName + "." + userData.LastName + str
