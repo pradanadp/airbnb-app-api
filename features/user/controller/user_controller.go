@@ -35,11 +35,9 @@ func (handler *UserController) LoginUser(c echo.Context) error {
 	if err != nil {
 		if strings.Contains(err.Error(), "validation") {
 			return c.JSON(http.StatusUnauthorized, utils.FailResponse("Input tidak valid, harap isi email dan password sesuai ketentuan", nil))
-		}
-		if strings.Contains(err.Error(), "email tidak terdaftar") {
+		}else if strings.Contains(err.Error(), "email tidak terdaftar") {
 			return c.JSON(http.StatusBadRequest, utils.FailResponse("Email yang anda berikan tidak terdaftar", nil))
-		}
-		if strings.Contains(err.Error(), "password tidak cocok") {
+		}else{
 			return c.JSON(http.StatusUnauthorized, utils.FailResponse("password yang anda berikan tidak valid", nil))
 		}
 	}
