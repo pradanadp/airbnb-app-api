@@ -5,6 +5,7 @@ import (
 	homestayInterface "be-api/features/homestay"
 	"errors"
 	"fmt"
+	"log"
 )
 
 type homestayService struct {
@@ -62,6 +63,7 @@ func (hs *homestayService) GetAllHomestay() ([]models.HomestayEntity, error) {
 func (hs *homestayService) GetHomestay(homestayID uint) (models.HomestayEntity, error) {
 	homestayEntity, err := hs.homestayRepository.Select(homestayID)
 	if err != nil {
+		log.Println("Error Get Homestay", err)
 		return models.HomestayEntity{}, fmt.Errorf("error: %v", err)
 	}
 
