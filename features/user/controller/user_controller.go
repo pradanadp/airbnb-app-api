@@ -203,6 +203,7 @@ func (handler *UserController) UploadProfilePicture(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "profile picture updated successfully",
+		"data":    updatedUser.ProfilePicture,
 	})
 }
 
@@ -242,5 +243,6 @@ func (handler *UserController) UploadHostDoc(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "host document added successfully",
+		"data":    updatedUser.ProfilePicture,
 	})
 }
