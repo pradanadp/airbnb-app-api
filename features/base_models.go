@@ -82,6 +82,8 @@ type Payment struct {
 	Booking   Booking `gorm:"foreignKey:BookingID"`
 	Name      string  `gorm:"column:payment_name;not null"`
 	Status    string  `gorm:"column:payment_status;not null"`
+	OrderID   string  `gorm:"column:order_id;not null"`
+	VANumber  string  `gorm:"column:va_number"`
 }
 
 

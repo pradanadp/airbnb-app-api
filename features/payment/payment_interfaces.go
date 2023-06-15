@@ -5,11 +5,11 @@ import (
 )
 
 type PaymentRepository interface {
-	Insert(payment models.PaymentEntity) (uint, error)
+	Insert(payment models.ResponMidtrans,BookingID uint) (uint, error)
 	Delete(paymentID uint) error
 }
 
 type PaymentService interface {
-	CreatePayment(payment models.PaymentEntity) (uint, error)
+	CreatePayment(payment models.ResponMidtrans,BookingID uint) (uint, error)
 	DeletePayment(paymentID uint) error
 }

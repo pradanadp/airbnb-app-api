@@ -11,8 +11,13 @@ type paymentService struct {
 }
 
 // CreatePayment implements payment.PaymentService.
-func (ps *paymentService) CreatePayment(payment models.PaymentEntity) (uint, error) {
-	panic("unimplemented")
+func (ps *paymentService) CreatePayment(payment models.ResponMidtrans,BookingID uint) (uint, error) {
+	id,err := ps.paymentRepository.Insert(payment,BookingID)
+	if err != nil {
+		return 0,fmt.Errorf("error: %v", err)
+	}
+
+	return id,nil
 }
 
 // DeletePayment implements payment.PaymentService.
