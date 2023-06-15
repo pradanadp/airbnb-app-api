@@ -167,5 +167,5 @@ func (ic *imageController) DeleteImage(c echo.Context) error {
 		imageEntities = append(imageEntities, ImageEntityToResponse(image))
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessResponse("images retrieved successfully", imageEntities))
+	return c.JSON(http.StatusOK, utils.SuccessResponse("image deleted successfully", imageEntities))
 }

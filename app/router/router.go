@@ -49,7 +49,6 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 		homestaysGroup.PUT("/:homestay_id", homestayControllerAPI.UpdateHomestay)
 		homestaysGroup.DELETE("/:homestay_id", homestayControllerAPI.DeleteHomestay)
 		homestaysGroup.POST("/:homestay_id/images", imageControllerAPI.UploadHomestayPhotos)
-		homestaysGroup.POST("/:homestay_id/images/local", imageControllerAPI.UploadHomestayPhotosLocal)
 		homestaysGroup.DELETE("/:homestay_id/images/:image_id", imageControllerAPI.DeleteImage)
 	}
 
