@@ -14,7 +14,7 @@ type bookingService struct {
 }
 
 // CheckAvailability implements booking.BookingService.
-func (bs *bookingService) CheckAvailability(homestayID uint, checkInDate time.Time) (bool, error) {
+func (bs *bookingService) CheckAvailability(homestayID uint, checkInDate, checkOutDate time.Time) (bool, error) {
 	bookings, err := bs.bookingRepository.SelectAllByID(homestayID)
 	if err != nil {
 		return false, err
@@ -34,6 +34,10 @@ func (bs *bookingService) CheckAvailability(homestayID uint, checkInDate time.Ti
 		// Check for overlap
 		if checkInDate.After(bookingCheckInDate) && checkInDate.Before(bookingCheckOutDate) {
 			return false, errors.New("homestay is not available for the provided check-in date")
+		} else if checkOutDate.After(bookingCheckInDate) && checkOutDate.Before(bookingCheckOutDate) {
+			return false, errors.New("homestay is not available for the provided check-in date")
+		} else if checkInDate.Before(bookingCheckInDate) && checkOutDate.After(bookingCheckOutDate) {
+			return false, errors.New("homestay is not available for the provided check-in date")
 		}
 	}
 
@@ -46,7 +50,11 @@ func (bs *bookingService) CreateBooking(booking models.BookingEntity) (uint, str
 	if err != nil {
 		return 0, "", errors.Wrap(err, "failed to parse booking check-in date")
 	}
-	isAvailable, err := bs.CheckAvailability(booking.HomestayID, checkInDate)
+	checkOutDate, err := time.Parse("2006-01-02", booking.CheckOutDate)
+	if err != nil {
+		return 0, "", errors.Wrap(err, "failed to parse booking check-out date")
+	}
+	isAvailable, err := bs.CheckAvailability(booking.HomestayID, checkInDate, checkOutDate)
 
 	if !isAvailable {
 		if err != nil {
