@@ -13,6 +13,6 @@ type BookingRepository interface {
 
 type BookingService interface {
 	CreateBooking(booking models.BookingEntity) (uint, string, error)
-	CheckAvailability(homestayID uint, checkInDate time.Time) (bool, error)
+	CheckAvailability(homestayID uint, checkInDate, checkOutDate time.Time) (bool, error)
 	DeleteBooking(bookingID uint) error
 }

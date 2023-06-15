@@ -13,7 +13,7 @@ type ReviewService struct {
 }
 
 // GetId implements review.ReviewServiceInterface
-func (service *ReviewService) GetId(review_id uint) (features.ReviewEntity,error) {
+func (service *ReviewService) GetId(review_id uint) (features.ReviewEntity, error) {
 	reviewUser, err := service.reviewData.SelectId(review_id)
 	if err != nil {
 		return features.ReviewEntity{}, err
@@ -22,7 +22,7 @@ func (service *ReviewService) GetId(review_id uint) (features.ReviewEntity,error
 }
 
 // DeleteRiview implements review.ReviewServiceInterface
-func (service *ReviewService) DeleteRiview(review_id uint) error {
+func (service *ReviewService) DeleteReview(review_id uint) error {
 	err := service.reviewData.Delete(review_id)
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func (service *ReviewService) DeleteRiview(review_id uint) error {
 }
 
 // AddRiview implements review.ReviewServiceInterface
-func (service *ReviewService) AddRiview(input features.ReviewEntity, costumer_id uint) (uint, error) {
+func (service *ReviewService) AddReview(input features.ReviewEntity, costumer_id uint) (uint, error) {
 	if errValidate := service.validate.Struct(input); errValidate != nil {
 		return 0, errValidate
 	}

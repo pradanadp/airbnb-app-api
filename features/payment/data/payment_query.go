@@ -59,6 +59,7 @@ func (pq *paymentQuery) Insert(payment models.ResponMidtrans,UserId uint) (featu
         return models.PaymentEntity{}, query.Error
     }
 
+
 	cfg := config.InitConfig()
 	midtrans.ServerKey = cfg.KEY_SERVER_MIDTRANS
 	authString := encodeAuthString(midtrans.ServerKey, "")

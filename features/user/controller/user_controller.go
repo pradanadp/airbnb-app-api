@@ -8,9 +8,14 @@ import (
 	"be-api/utils"
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/labstack/echo/v4"
+)
+
+const (
+	MaxFileSize = 1 << 20 // 1 MB
 )
 
 type UserController struct {
@@ -35,9 +40,9 @@ func (handler *UserController) LoginUser(c echo.Context) error {
 	if err != nil {
 		if strings.Contains(err.Error(), "validation") {
 			return c.JSON(http.StatusUnauthorized, utils.FailResponse("Input tidak valid, harap isi email dan password sesuai ketentuan", nil))
-		}else if strings.Contains(err.Error(), "email tidak terdaftar") {
+		} else if strings.Contains(err.Error(), "email tidak terdaftar") {
 			return c.JSON(http.StatusBadRequest, utils.FailResponse("Email yang anda berikan tidak terdaftar", nil))
-		}else{
+		} else {
 			return c.JSON(http.StatusUnauthorized, utils.FailResponse("password yang anda berikan tidak valid", nil))
 		}
 	}
@@ -70,7 +75,7 @@ func (handler *UserController) AddUser(c echo.Context) error {
 	if err != nil {
 		if strings.Contains(err.Error(), "validation") {
 			return c.JSON(http.StatusBadRequest, utils.FailResponse("error validation payload "+err.Error(), nil))
-		} else{
+		} else {
 			return c.JSON(http.StatusBadRequest, utils.FailResponse("email tidak tersedia "+err.Error(), nil))
 		}
 	}
@@ -84,7 +89,7 @@ func (handler *UserController) AddUser(c echo.Context) error {
 }
 
 func (handler *UserController) GetUser(c echo.Context) error {
-	id := middlewares.ExtracTokenUserId(c)
+	id := middlewares.ExtractTokenUserId(c)
 	user, err := handler.userService.GetUser(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("data tidak tersedia ", nil))
@@ -95,7 +100,7 @@ func (handler *UserController) GetUser(c echo.Context) error {
 }
 
 func (handler *UserController) DeleteUser(c echo.Context) error {
-	id := middlewares.ExtracTokenUserId(c)
+	id := middlewares.ExtractTokenUserId(c)
 	errId := handler.userService.GetId(id)
 	if errId != nil {
 		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("fail to id user not found"))
@@ -109,7 +114,7 @@ func (handler *UserController) DeleteUser(c echo.Context) error {
 }
 
 func (handler *UserController) UpdateUser(c echo.Context) error {
-	id := middlewares.ExtracTokenUserId(c)
+	id := middlewares.ExtractTokenUserId(c)
 	errId := handler.userService.GetId(id)
 	if errId != nil {
 		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("fail to id user not found"))
@@ -138,7 +143,7 @@ func (handler *UserController) UpdateUser(c echo.Context) error {
 }
 
 func (handler *UserController) UpgradeUser(c echo.Context) error {
-	id := middlewares.ExtracTokenUserId(c)
+	id := middlewares.ExtractTokenUserId(c)
 	errId := handler.userService.GetId(id)
 	if errId != nil {
 		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("fail to id user not found"))
@@ -166,12 +171,27 @@ func (handler *UserController) UpgradeUser(c echo.Context) error {
 }
 
 func (handler *UserController) UploadProfilePicture(c echo.Context) error {
+	id := middlewares.ExtractTokenUserId(c)
+	errId := handler.userService.GetId(id)
+	if errId != nil {
+		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("User ID not found"))
+	}
+
 	awsService := aws.InitS3()
 
 	file, err := c.FormFile("profile_picture")
 	if err != nil {
 		return err
 	}
+
+	// Check file size before opening it
+	fileSize := file.Size
+	if fileSize > MaxFileSize {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("File size exceeds the limit of 1 MB", nil))
+	}
+
+	// Get the file type from the Content-Type header
+	fileType := file.Header.Get("Content-Type")
 
 	path := "profile-picture/" + file.Filename
 	fileContent, err := file.Open()
@@ -180,38 +200,50 @@ func (handler *UserController) UploadProfilePicture(c echo.Context) error {
 	}
 	defer fileContent.Close()
 
-	err = awsService.UploadFile(path, fileContent)
+	err = awsService.UploadFile(path, fileType, fileContent)
 	if err != nil {
 		return err
 	}
 
-	id := middlewares.ExtracTokenUserId(c)
-	errId := handler.userService.GetId(id)
-	if errId != nil {
-		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("User ID not found"))
-	}
-
 	var updatedUser features.UserEntity
-	updatedUser.ProfilePicture = fmt.Sprintf("https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/profile-picture/%v", file.Filename)
+	updatedUser.ProfilePicture = fmt.Sprintf("https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/profile-picture/%s", filepath.Base(file.Filename))
 
 	errUpdate := handler.userService.Update(updatedUser, uint(id))
 	if errUpdate != nil {
 		return c.JSON(http.StatusInternalServerError, utils.FailResponse("status internal error", nil))
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "profile picture updated successfully",
-		"data":    updatedUser.ProfilePicture,
-	})
+	user, err := handler.userService.GetUser(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("data not found", nil))
+	}
+	userResponse := EntityToResponse(user)
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("profile picture updated successfully", userResponse))
 }
 
 func (handler *UserController) UploadHostDoc(c echo.Context) error {
+	id := middlewares.ExtractTokenUserId(c)
+	errId := handler.userService.GetId(id)
+	if errId != nil {
+		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("User ID not found"))
+	}
+
 	awsService := aws.InitS3()
 
 	file, err := c.FormFile("host_document")
 	if err != nil {
 		return err
 	}
+
+	// Check file size before opening it
+	fileSize := file.Size
+	if fileSize > MaxFileSize {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("File size exceeds the limit of 1 MB", nil))
+	}
+
+	// Get the file type from the Content-Type header
+	fileType := file.Header.Get("Content-Type")
 
 	path := "host-doc/" + file.Filename
 	fileContent, err := file.Open()
@@ -220,27 +252,25 @@ func (handler *UserController) UploadHostDoc(c echo.Context) error {
 	}
 	defer fileContent.Close()
 
-	err = awsService.UploadFile(path, fileContent)
+	err = awsService.UploadFile(path, fileType, fileContent)
 	if err != nil {
 		return err
 	}
 
-	id := middlewares.ExtracTokenUserId(c)
-	errId := handler.userService.GetId(id)
-	if errId != nil {
-		return c.JSON(http.StatusNotFound, utils.FailWithoutDataResponse("User ID not found"))
-	}
-
 	var updatedUser features.UserEntity
-	updatedUser.ProfilePicture = fmt.Sprintf("https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/host-doc/%v", file.Filename)
+	updatedUser.HostDocument = fmt.Sprintf("https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/host-doc/%s", filepath.Base(file.Filename))
+	updatedUser.Role = "hoster"
 
 	errUpdate := handler.userService.Update(updatedUser, uint(id))
 	if errUpdate != nil {
 		return c.JSON(http.StatusInternalServerError, utils.FailResponse("status internal error", nil))
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "host document added successfully",
-		"data":    updatedUser.ProfilePicture,
-	})
+	user, err := handler.userService.GetUser(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("data not found", nil))
+	}
+	userResponse := EntityToResponse(user)
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("host document added successfully", userResponse))
 }

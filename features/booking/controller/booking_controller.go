@@ -50,3 +50,7 @@ func (bc *bookingController) CreateBooking(c echo.Context) error {
 }
 
 
+func (bc *bookingController) DeleteBooking(c echo.Context) error {
+	return nil
+}
+
