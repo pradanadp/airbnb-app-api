@@ -4,12 +4,16 @@ import (
 	"be-api/features"
 	models "be-api/features"
 	paymentInterface "be-api/features/payment"
-	"be-api/features/payment/controller"
-	"be-api/midtran"
-	"encoding/json"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
+
+	"be-api/app/config"
+
+	"github.com/midtrans/midtrans-go"
+	"github.com/midtrans/midtrans-go/coreapi"
 
 	"gorm.io/gorm"
 )
@@ -28,62 +32,65 @@ func (pq *paymentQuery) Delete(paymentID uint) error {
 	return nil
 }
 
-// Insert implements payment.PaymentRepository.
-func (pq *paymentQuery) Insert(payment models.ResponMidtrans, BookingID uint) (uint, error) {
+func (pq *paymentQuery) Insert(payment models.ResponMidtrans) (features.PaymentEntity, error) {
 
 
-	var order features.Booking
+	cfg := config.InitConfig()
+	midtrans.ServerKey = cfg.KEY_SERVER_MIDTRANS
+	authString := encodeAuthString(midtrans.ServerKey, "")
+	fmt.Println("AUTH_STRING:", authString)
+	midtrans.Environment = midtrans.Sandbox
 
-	errFound :=pq.db.First(order, BookingID)
-	if errFound != nil{
-		return 0,errFound.Error
+	if payment.GrossAmount == "" {
+		return features.PaymentEntity{}, errors.New("GrossAmount is empty")
 	}
-	payload := map[string]interface{}{
-		"payment_type": "bank_transfer",
-		"transaction_details": map[string]interface{}{
-			"order_id": order.OrderID,
-			"gross_amount": order.TotalPrice,
-		},
-		"bank_transfer": map[string]interface{}{
-			"bank": "bca",
-		},
-	}
-	payloadJSON, err := json.Marshal(payload)
+
+	num, err := strconv.ParseInt(payment.GrossAmount, 10, 64)
 	if err != nil {
-		
-		return 0,err
+		fmt.Println("Error:", err)
+		return features.PaymentEntity{},err
 	}
 
-    response, errMidtrans := midtran.ChargeTransaction(payloadJSON)
-    if errMidtrans != nil {
-        return 0, errMidtrans
-    }
-    fmt.Println("response:", response)
+	bankTransferReq := &coreapi.ChargeReq{
+		PaymentType: coreapi.PaymentTypeBankTransfer,
+		TransactionDetails: midtrans.TransactionDetails{
+			OrderID:  payment.OrderId,
+			GrossAmt: num,
+		},
+		BankTransfer: &coreapi.BankTransferDetails{
+			Bank: "bca",
+		},
+	}
+
+	coreApiRes, errCore := coreapi.ChargeTransaction(bankTransferReq)
+	if errCore != nil {
+		log.Fatal("Failed to charge transaction:", errCore)
+	}
+	fmt.Println("Response :", coreApiRes)
 
 
-    var midtransResp models.ResponMidtrans
-    errMarshal := json.Unmarshal(response, &midtransResp)
-    if errMarshal != nil {
-		log.Printf("Error sending request: %s", errMarshal.Error())
-        return 0, errMarshal
-    }
-	fmt.Println("responseMashal:", midtransResp)
+	var result features.Payment
+	result.Name = coreApiRes.Bank
+	result.OrderID = coreApiRes.OrderID
+	result.Status = coreApiRes.TransactionStatus
+	result.VANumber = coreApiRes.VaNumbers[0].VANumber
+	errCreate := pq.db.Create(&result)
+	if errCreate != nil{
+		return features.PaymentEntity{},errCreate.Error
+	}
 
-    midtrans := controller.PaymentMidstransToModel(midtransResp)
-	midtrans.BookingID = 6
-    errCreate := pq.db.Create(&midtrans)
-    if errCreate != nil {
-        return 0, errCreate.Error
-    }
 
-	fmt.Println("data status:",midtrans.Status)
-	fmt.Println("data order:",midtrans.OrderID)
-	fmt.Println("data kartu:",midtrans.VANumber)
+	data :=features.PaymentModelToEntity(result)
+	
+	return data,nil
 
-    dataRespons := features.PaymentModelToEntity(midtrans)
-    fmt.Println("dataRespons.ID:", dataRespons.ID)
-    return dataRespons.ID, nil
+}
 
+func encodeAuthString(username, password string) string {
+	auth := username + ":" + password
+	authBytes := []byte(auth)
+	encodedAuth := base64.StdEncoding.EncodeToString(authBytes)
+	return encodedAuth
 }
 
 func New(db *gorm.DB) paymentInterface.PaymentRepository {
