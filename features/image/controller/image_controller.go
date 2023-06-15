@@ -49,6 +49,8 @@ func (ic *imageController) UploadHomestayPhotos(c echo.Context) error {
 			return c.JSON(http.StatusBadRequest, utils.FailResponse("File size exceeds the limit of 1 MB", nil))
 		}
 
+		fileType := file.Header.Get("Content-Type")
+
 		path := "homestay-photos/" + file.Filename
 		src, err := file.Open()
 		if err != nil {
@@ -56,7 +58,7 @@ func (ic *imageController) UploadHomestayPhotos(c echo.Context) error {
 		}
 		defer src.Close()
 
-		err = awsService.UploadFile(path, src)
+		err = awsService.UploadFile(path, fileType, src)
 		if err != nil {
 			return err
 		}

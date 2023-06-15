@@ -21,11 +21,12 @@ type AWSService struct {
 	S3Client *s3.Client
 }
 
-func (awsSvc AWSService) UploadFile(key string, file multipart.File) error {
+func (awsSvc AWSService) UploadFile(key string, fileType string, file multipart.File) error {
 	_, err := awsSvc.S3Client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(AWS_S3_BUCKET),
-		Key:    aws.String(key),
-		Body:   file,
+		Bucket:      aws.String(AWS_S3_BUCKET),
+		Key:         aws.String(key),
+		Body:        file,
+		ContentType: aws.String(fileType),
 	})
 	if err != nil {
 		log.Println("Error while uploading the file", err)

@@ -190,6 +190,9 @@ func (handler *UserController) UploadProfilePicture(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("File size exceeds the limit of 1 MB", nil))
 	}
 
+	// Get the file type from the Content-Type header
+	fileType := file.Header.Get("Content-Type")
+
 	path := "profile-picture/" + file.Filename
 	fileContent, err := file.Open()
 	if err != nil {
@@ -197,7 +200,7 @@ func (handler *UserController) UploadProfilePicture(c echo.Context) error {
 	}
 	defer fileContent.Close()
 
-	err = awsService.UploadFile(path, fileContent)
+	err = awsService.UploadFile(path, fileType, fileContent)
 	if err != nil {
 		return err
 	}
@@ -239,6 +242,9 @@ func (handler *UserController) UploadHostDoc(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("File size exceeds the limit of 1 MB", nil))
 	}
 
+	// Get the file type from the Content-Type header
+	fileType := file.Header.Get("Content-Type")
+
 	path := "host-doc/" + file.Filename
 	fileContent, err := file.Open()
 	if err != nil {
@@ -246,7 +252,7 @@ func (handler *UserController) UploadHostDoc(c echo.Context) error {
 	}
 	defer fileContent.Close()
 
-	err = awsService.UploadFile(path, fileContent)
+	err = awsService.UploadFile(path, fileType, fileContent)
 	if err != nil {
 		return err
 	}
