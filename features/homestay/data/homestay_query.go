@@ -104,6 +104,34 @@ func (hq *homestayQuery) Select(homestayID uint) (models.HomestayEntity, error) 
 	return homestayEntity, nil
 }
 
+// SelectAllByHostID implements homestay.HomestayRepository.
+func (hq *homestayQuery) SelectAllByHostID(hostID uint) ([]models.HomestayEntity, error) {
+	var homestays []models.Homestay
+	queryResult := hq.db.Preload("Bookings").Preload("Reviews").Preload("Images").Where("host_id = ?", hostID).Find(&homestays)
+	if queryResult.Error != nil {
+		return []models.HomestayEntity{}, queryResult.Error
+	}
+
+	var homestayEntities []models.HomestayEntity
+	for _, homestay := range homestays {
+		var rating sql.NullFloat64
+		if err := hq.db.Raw("SELECT AVG(ratings) FROM reviews WHERE homestay_id = ?", homestay.ID).Scan(&rating).Error; err != nil {
+			return []models.HomestayEntity{}, err
+		}
+
+		averageRating := 0.0
+		if rating.Valid {
+			averageRating = rating.Float64
+		}
+
+		homestay.Rating = averageRating
+		homestayEntity := models.HomestayModelToEntity(homestay)
+		homestayEntities = append(homestayEntities, homestayEntity)
+	}
+
+	return homestayEntities, nil
+}
+
 // SelectAll implements homestay.HomestayRepository.
 func (hq *homestayQuery) SelectAll() ([]models.HomestayEntity, error) {
 	var homestays []models.Homestay

@@ -72,6 +72,31 @@ func ReadAllHomestayEntityToResponse(homestay models.HomestayEntity) HomestayRes
 	}
 }
 
+func ReadAllHomestayByHostIDEntityToResponse(homestay models.HomestayEntity) HomestayResponse {
+	var imageLinks []ImageResponse
+	for _, link := range homestay.Images {
+		imageLinks = append(imageLinks, ImageEntityToResponse(link))
+	}
+
+	var reviews []ReviewResponse
+	for _, review := range homestay.Reviews {
+		reviews = append(reviews, ReviewEntityToResponse(review))
+	}
+
+	return HomestayResponse{
+		ID:          homestay.ID,
+		HostID:      homestay.HostID,
+		Title:       homestay.Title,
+		Description: homestay.Description,
+		Location:    homestay.Location,
+		Price:       homestay.Price,
+		Facilities:  homestay.Facilities,
+		Rating:      homestay.Rating,
+		Images:      imageLinks,
+		Reviews:     reviews,
+	}
+}
+
 func ReviewEntityToResponse(review models.ReviewEntity) ReviewResponse {
 	return ReviewResponse{
 		CustomerID: review.CustomerID,

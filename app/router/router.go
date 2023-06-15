@@ -75,6 +75,7 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	e.PUT("/upgrades", UserController.UpgradeUser, middlewares.JWTMiddleware())
 	e.POST("/users/profile-picture", UserController.UploadProfilePicture, middlewares.JWTMiddleware())
 	e.POST("/users/host-doc", UserController.UploadHostDoc, middlewares.JWTMiddleware())
+	e.GET("/users/homestays", homestayControllerAPI.ReadAllHomestayByHostID, middlewares.JWTMiddleware())
 
 	//review Router
 	ReviewData := reviewData.New(db)
