@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"be-api/app/middlewares"
 	models "be-api/features"
 	homestayInterface "be-api/features/homestay"
 	"be-api/utils"
@@ -22,7 +23,9 @@ func New(service homestayInterface.HomestayService) *homestayController {
 }
 
 func (hc *homestayController) CreateHomestay(c echo.Context) error {
+	hostID := middlewares.ExtractTokenUserId(c)
 	var homestay models.HomestayEntity
+	homestay.HostID = uint(hostID)
 
 	err := c.Bind(&homestay)
 	if err != nil {
@@ -69,23 +72,38 @@ func (hc *homestayController) ReadAllHomestay(c echo.Context) error {
 
 	var homestayResponses []HomestayResponse
 	for _, homestay := range homestays {
-		homestayResponses = append(homestayResponses, HomestayEntityToResponse(homestay))
+		homestayResponses = append(homestayResponses, ReadAllHomestayEntityToResponse(homestay))
+	}
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("homestays retrieved successfully", homestayResponses))
+}
+
+func (hc *homestayController) ReadAllHomestayByHostID(c echo.Context) error {
+	hostID := middlewares.ExtractTokenUserId(c)
+	homestays, err := hc.homestayService.GetAllHomestayByHostID(uint(hostID))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, utils.FailResponse("homestays not found", nil))
+	}
+
+	var homestayResponses []HomestayResponse
+	for _, homestay := range homestays {
+		homestayResponses = append(homestayResponses, ReadAllHomestayByHostIDEntityToResponse(homestay))
 	}
 
 	return c.JSON(http.StatusOK, utils.SuccessResponse("homestays retrieved successfully", homestayResponses))
 }
 
 func (hc *homestayController) UpdateHomestay(c echo.Context) error {
-	var updatedHomestay models.HomestayEntity
-	err := c.Bind(&updatedHomestay)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, utils.FailResponse("failed to bind homestay data", nil))
-	}
-
 	idParam := c.Param("homestay_id")
 	homestayID, err := strconv.Atoi(idParam)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("invalid homestay ID", nil))
+	}
+
+	var updatedHomestay models.HomestayEntity
+	err = c.Bind(&updatedHomestay)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("failed to bind homestay data", nil))
 	}
 
 	err = hc.homestayService.UpdatedHomestay(uint(homestayID), updatedHomestay)
@@ -104,13 +122,15 @@ func (hc *homestayController) UpdateHomestay(c echo.Context) error {
 }
 
 func (hc *homestayController) DeleteHomestay(c echo.Context) error {
+	var homestay models.HomestayEntity
+
 	idParam := c.Param("homestay_id")
 	homestayID, err := strconv.Atoi(idParam)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("invalid homestay ID", nil))
 	}
 
-	homestay, err := hc.homestayService.GetHomestay(uint(homestayID))
+	homestay, err = hc.homestayService.GetHomestay(uint(homestayID))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("homestay not found", nil))
 	}

@@ -46,3 +46,7 @@ func (bc *bookingController) CreateBooking(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, utils.SuccessResponse("booking created successfully, complete the payment immediately", bookingResponse))
 }
+
+func (bc *bookingController) DeleteBooking(c echo.Context) error {
+	return nil
+}

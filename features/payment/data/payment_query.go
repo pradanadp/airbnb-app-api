@@ -34,6 +34,7 @@ func (pq *paymentQuery) Delete(paymentID uint) error {
 
 func (pq *paymentQuery) Insert(payment models.ResponMidtrans) (features.PaymentEntity, error) {
 
+
 	cfg := config.InitConfig()
 	midtrans.ServerKey = cfg.KEY_SERVER_MIDTRANS
 	authString := encodeAuthString(midtrans.ServerKey, "")
@@ -78,12 +79,12 @@ func (pq *paymentQuery) Insert(payment models.ResponMidtrans) (features.PaymentE
 		return features.PaymentEntity{},errCreate.Error
 	}
 
+
 	data :=features.PaymentModelToEntity(result)
 	
 	return data,nil
 
 }
-
 
 func encodeAuthString(username, password string) string {
 	auth := username + ":" + password

@@ -70,6 +70,16 @@ func (hs *homestayService) GetHomestay(homestayID uint) (models.HomestayEntity, 
 	return homestayEntity, nil
 }
 
+// GetAllHomestayByHostID implements homestay.HomestayService.
+func (hs *homestayService) GetAllHomestayByHostID(hostID uint) ([]models.HomestayEntity, error) {
+	homestayEntities, err := hs.homestayRepository.SelectAllByHostID(hostID)
+	if err != nil {
+		return nil, fmt.Errorf("error: %v", err)
+	}
+
+	return homestayEntities, nil
+}
+
 // UpdatedHomestay implements homestay.HomestayService.
 func (hs *homestayService) UpdatedHomestay(homestayID uint, updatedHomestay models.HomestayEntity) error {
 	err := hs.homestayRepository.Update(homestayID, updatedHomestay)

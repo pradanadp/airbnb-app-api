@@ -8,7 +8,7 @@ type UserEntity struct {
 	ID             uint             `json:"user_id,omitempty" form:"user_id"`
 	FirstName      string           `json:"first_name,omitempty" form:"first_name"`
 	LastName       string           `json:"last_name,omitempty" form:"last_name"`
-	FullName       string     		`json:"full_name,omitempty" form:"full_name"`
+	FullName       string           `json:"full_name,omitempty" form:"full_name"`
 	Username       string           `json:"username,omitempty" form:"username"`
 	Email          string           `json:"email,omitempty" form:"email"`
 	Password       string           `json:"password,omitempty" form:"password"`
@@ -22,9 +22,7 @@ type UserEntity struct {
 	BookingCount   uint             `json:"booking_count,omitempty" form:"booking_count"`
 	HostDocument   string           `json:"host_document,omitempty" form:"host_document"`
 	ProfilePicture string           `json:"profile_picture,omitempty" form:"profile_picture"`
-	NamaPemilik    string     		`json:"nama_pemilik,omitempty" form:"nama_pemilik"` 
-	KTPFile        string    		`json:"ktp_file,omitempty" form:"ktp_file"`
-	NIBFile        string     		`json:"nib_file,omitempty" form:"nib_file"`
+	Owner          string           `json:"owner,omitempty" form:"owner"`
 	CreatedAt      time.Time        `json:"created_at,omitempty"`
 	UpdatedAt      time.Time        `json:"updated_at,omitempty"`
 	DeletedAt      time.Time        `json:"deleted_at,omitempty"`
@@ -110,6 +108,7 @@ type LoginUser struct {
 	Password string `json:"password,omitempty" form:"password" validate:"required"`
 }
 
+
 type ResponMidtrans struct {
 	VANumber 				string `json:"va_number"`
 	Bank 	 				string `json:"bank"`
@@ -128,5 +127,6 @@ type ResponMidtrans struct {
 	FraudStatus 			string `json:"fraud_status"`
 	Currency 				string `json:"currency"`
 }
+
 
 

@@ -17,9 +17,7 @@ type User struct {
 	Gender         string     `gorm:"type:enum('male','female');default:'male';column:gender;not nul"`
 	Role           string     `gorm:"type:enum('hoster','user');default:'user';column:role;not nul"`
 	Bio            string     `gorm:"column:bio"`
-	NamaPemilik    string     `gorm:"column:nama_pemilik"`
-	KTPFile        string     `gorm:"column:ktp_file"`
-	NIBFile        string     `gorm:"column:nib_file"`
+	Owner          string     `gorm:"column:owner"`
 	HostingCount   uint       `gorm:"column:hosting_count"`
 	BookingCount   uint       `gorm:"column:booking_count"`
 	HostDocument   string     `gorm:"column:host_document"`
@@ -85,5 +83,3 @@ type Payment struct {
 	OrderID   string  `gorm:"column:order_id;not null"`
 	VANumber  string  `gorm:"column:va_number"`
 }
-
-
