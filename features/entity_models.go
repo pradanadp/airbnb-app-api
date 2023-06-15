@@ -124,7 +124,7 @@ type ResponMidtrans struct {
 	PaymentAmounts 			string `json:"payment_amounts"`
 	OrderId 				string  `json:"order_id"`
 	MerchantId 				string `json:"merchant_id"`
-	GroosAmount 			string `json:"gross_amount"`
+	GrossAmount 			string `json:"gross_amount"`
 	FraudStatus 			string `json:"fraud_status"`
 	Currency 				string `json:"currency"`
 }

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"be-api/features"
 	models "be-api/features"
 	paymentInterface "be-api/features/payment"
 	"fmt"
@@ -11,13 +12,13 @@ type paymentService struct {
 }
 
 // CreatePayment implements payment.PaymentService.
-func (ps *paymentService) CreatePayment(payment models.ResponMidtrans,BookingID uint) (uint, error) {
-	id,err := ps.paymentRepository.Insert(payment,BookingID)
+func (ps *paymentService) CreatePayment(payment models.ResponMidtrans) (features.PaymentEntity, error) {
+	Orderid,err := ps.paymentRepository.Insert(payment)
 	if err != nil {
-		return 0,fmt.Errorf("error: %v", err)
+		return features.PaymentEntity{},fmt.Errorf("error: %v", err)
 	}
 
-	return id,nil
+	return Orderid,nil
 }
 
 // DeletePayment implements payment.PaymentService.
