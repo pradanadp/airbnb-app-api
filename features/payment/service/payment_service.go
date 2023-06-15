@@ -23,8 +23,8 @@ func (ps *paymentService) GetPayment(UserId uint) (features.PaymentEntity,error)
 }
 
 // CreatePayment implements payment.PaymentService.
-func (ps *paymentService) CreatePayment(payment models.ResponMidtrans, id uint) (features.PaymentEntity, error) {
-	Orderid, err := ps.paymentRepository.Insert(payment,id)
+func (ps *paymentService) CreatePayment(payment models.ResponMidtrans, id uint,booking_id uint) (features.PaymentEntity, error) {
+	Orderid, err := ps.paymentRepository.Insert(payment,id,booking_id)
 	if err != nil {
 		return features.PaymentEntity{}, fmt.Errorf("error: %v", err)
 	}

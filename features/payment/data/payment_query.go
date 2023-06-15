@@ -51,10 +51,10 @@ func (pq *paymentQuery) Delete(paymentID uint) error {
 	return nil
 }
 
-func (pq *paymentQuery) Insert(payment models.ResponMidtrans,UserId uint) (features.PaymentEntity, error) {
+func (pq *paymentQuery) Insert(payment models.ResponMidtrans,UserId uint,booking_id uint) (features.PaymentEntity, error) {
 	
     var booking models.Booking
-    query := pq.db.Where("customer_id = ?", UserId).Last(&booking)
+    query := pq.db.Where("id = ?",booking_id).Last(&booking)
     if query.Error != nil {
         return models.PaymentEntity{}, query.Error
     }

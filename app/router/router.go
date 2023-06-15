@@ -90,5 +90,5 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	PaymentService := paymentService.New(PaymentData)
 	PaymentController := paymentController.New(PaymentService)
 
-	e.POST("/payments", PaymentController.AddPayment,middlewares.JWTMiddleware())
+	e.POST("/bookings/:booking_id/payments", PaymentController.AddPayment,middlewares.JWTMiddleware())
 }
