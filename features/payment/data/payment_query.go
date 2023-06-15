@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"strconv"
 
 	"be-api/app/config"
 
@@ -22,6 +21,26 @@ type paymentQuery struct {
 	db *gorm.DB
 }
 
+// Select implements payment.PaymentRepository
+func (pq *paymentQuery) Select(UserId uint) (features.PaymentEntity, error) {
+	var booking models.Booking
+
+	queryBooking := pq.db.Where("customer_id = ?", UserId).First(&booking)
+	if queryBooking.Error != nil {
+		return features.PaymentEntity{}, queryBooking.Error
+	}
+	
+	var payment models.Payment
+	queryPayment := pq.db.Preload("Bookings").Where("booking_id = ?", booking.ID).First(&payment)
+	if queryPayment.Error != nil {
+		return features.PaymentEntity{}, queryPayment.Error
+	}
+
+	data := features.PaymentModelToEntity(payment)
+	return data, nil
+	
+}
+
 // Delete implements payment.PaymentRepository.
 func (pq *paymentQuery) Delete(paymentID uint) error {
 	deleteOpr := pq.db.Delete(&models.Payment{}, paymentID)
@@ -32,7 +51,13 @@ func (pq *paymentQuery) Delete(paymentID uint) error {
 	return nil
 }
 
-func (pq *paymentQuery) Insert(payment models.ResponMidtrans) (features.PaymentEntity, error) {
+func (pq *paymentQuery) Insert(payment models.ResponMidtrans,UserId uint) (features.PaymentEntity, error) {
+	
+    var booking models.Booking
+    query := pq.db.Where("customer_id = ?", UserId).Last(&booking)
+    if query.Error != nil {
+        return models.PaymentEntity{}, query.Error
+    }
 
 	cfg := config.InitConfig()
 	midtrans.ServerKey = cfg.KEY_SERVER_MIDTRANS
@@ -40,25 +65,11 @@ func (pq *paymentQuery) Insert(payment models.ResponMidtrans) (features.PaymentE
 	fmt.Println("AUTH_STRING:", authString)
 	midtrans.Environment = midtrans.Sandbox
 
-	if payment.GrossAmount == "" {
-		return features.PaymentEntity{}, errors.New("GrossAmount is empty")
-	}
-
-	num, err := strconv.ParseInt(payment.GrossAmount, 10, 64)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return features.PaymentEntity{},err
-	}
-
 	bankTransferReq := &coreapi.ChargeReq{
-		PaymentType: coreapi.PaymentTypeBankTransfer,
-		TransactionDetails: midtrans.TransactionDetails{
-			OrderID:  payment.OrderId,
-			GrossAmt: num,
-		},
-		BankTransfer: &coreapi.BankTransferDetails{
-			Bank: "bca",
-		},
+		PaymentType:        coreapi.PaymentTypeBankTransfer,
+		TransactionDetails: midtrans.TransactionDetails{OrderID: booking.OrderID, GrossAmt: int64(booking.TotalPrice)},
+		BankTransfer:       &coreapi.BankTransferDetails{Bank: "bca"},
+		Metadata:           nil,
 	}
 
 	coreApiRes, errCore := coreapi.ChargeTransaction(bankTransferReq)
@@ -67,23 +78,24 @@ func (pq *paymentQuery) Insert(payment models.ResponMidtrans) (features.PaymentE
 	}
 	fmt.Println("Response :", coreApiRes)
 
-
 	var result features.Payment
 	result.Name = coreApiRes.Bank
 	result.OrderID = coreApiRes.OrderID
 	result.Status = coreApiRes.TransactionStatus
 	result.VANumber = coreApiRes.VaNumbers[0].VANumber
+
+	result.BookingID = booking.ID 
+	result.Name ="bca"
 	errCreate := pq.db.Create(&result)
-	if errCreate != nil{
-		return features.PaymentEntity{},errCreate.Error
+	if errCreate != nil {
+		return features.PaymentEntity{}, errCreate.Error
 	}
 
-	data :=features.PaymentModelToEntity(result)
-	
-	return data,nil
+	data := features.PaymentModelToEntity(result)
+
+	return data, nil
 
 }
-
 
 func encodeAuthString(username, password string) string {
 	auth := username + ":" + password

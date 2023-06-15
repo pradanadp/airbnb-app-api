@@ -22,11 +22,13 @@ func New(service bookingInterface.BookingService) *bookingController {
 }
 
 func (bc *bookingController) CreateBooking(c echo.Context) error {
+
 	var booking models.BookingEntity
 	err := c.Bind(&booking)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("failed to bind booking data", nil))
 	}
+
 
 	bookingID, orderID, err := bc.bookingService.CreateBooking(booking)
 	if err != nil {
@@ -46,3 +48,5 @@ func (bc *bookingController) CreateBooking(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, utils.SuccessResponse("booking created successfully, complete the payment immediately", bookingResponse))
 }
+
+
