@@ -11,14 +11,25 @@ type paymentService struct {
 	paymentRepository paymentInterface.PaymentRepository
 }
 
-// CreatePayment implements payment.PaymentService.
-func (ps *paymentService) CreatePayment(payment models.ResponMidtrans) (features.PaymentEntity, error) {
-	Orderid,err := ps.paymentRepository.Insert(payment)
+// GetPayment implements payment.PaymentService
+func (ps *paymentService) GetPayment(UserId uint) (features.PaymentEntity,error) {
+	data,err:=ps.paymentRepository.Select(UserId)
 	if err != nil {
-		return features.PaymentEntity{},fmt.Errorf("error: %v", err)
+		return features.PaymentEntity{}, fmt.Errorf("error: %v", err)
 	}
 
-	return Orderid,nil
+	return data, nil
+
+}
+
+// CreatePayment implements payment.PaymentService.
+func (ps *paymentService) CreatePayment(payment models.ResponMidtrans, id uint) (features.PaymentEntity, error) {
+	Orderid, err := ps.paymentRepository.Insert(payment,id)
+	if err != nil {
+		return features.PaymentEntity{}, fmt.Errorf("error: %v", err)
+	}
+
+	return Orderid, nil
 }
 
 // DeletePayment implements payment.PaymentService.

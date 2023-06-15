@@ -23,7 +23,7 @@ type User struct {
 	HostDocument   string     `gorm:"column:host_document"`
 	ProfilePicture string     `gorm:"column:profile_picture"`
 	Homestays      []Homestay `gorm:"foreignKey:HostID"`
-	Bookings       []Booking  `gorm:"foreignKey:CustomerID"`
+	Bookings       []Booking  `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE"`
 	Reviews        []Review   `gorm:"foreignKey:CustomerID"`
 }
 
