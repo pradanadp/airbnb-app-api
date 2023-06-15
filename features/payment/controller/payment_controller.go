@@ -6,6 +6,8 @@ import (
 	paymentInterface "be-api/features/payment"
 	"be-api/utils"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -15,15 +17,17 @@ type paymentController struct {
 }
 
 func (handler *paymentController) AddPayment(c echo.Context) error {
-	id := middlewares.ExtracTokenUserId(c)
+	id := middlewares.ExtractTokenUserId(c)
 
-	// dataBooking,errBooking := handler.paymentService.GetPayment(uint(id))
-	// if errBooking != nil {
-	// 	if errBooking == echo.ErrBadRequest {
-	// 		return c.JSON(http.StatusBadRequest, utils.FailResponse("error get payload "+errBooking.Error(), nil))
-	// 	}
-	// }
-	// bookingID := dataBooking.Booking.ID 
+	IdBooking := c.Param("booking_id")
+	idConv, errConv := strconv.Atoi(IdBooking)
+	if errConv != nil {
+		if strings.Contains(errConv.Error(), "bind failed") {
+			return c.JSON(http.StatusBadRequest, utils.FailResponse(errConv.Error(), nil))
+		} else {
+			return c.JSON(http.StatusInternalServerError, utils.FailResponse("failed to bind data. "+errConv.Error(), nil))
+		}
+	}
 
 	var payment features.ResponMidtrans
 	err := c.Bind(&payment)
@@ -33,12 +37,12 @@ func (handler *paymentController) AddPayment(c echo.Context) error {
 		}
 	}
 
-	idOrder, errCreate := handler.paymentService.CreatePayment(payment,uint(id))
+	idOrder, errCreate := handler.paymentService.CreatePayment(payment,uint(id),uint(idConv))
 	if errCreate != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse(errCreate.Error(), nil))
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessResponse("review add successfully", idOrder))
+	return c.JSON(http.StatusOK, utils.SuccessResponse("payment add successfully", idOrder))
 
 }
 
