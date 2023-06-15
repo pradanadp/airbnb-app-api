@@ -28,12 +28,12 @@ func (pq *paymentQuery) Delete(paymentID uint) error {
 func (pq *paymentQuery) Insert(payment models.PaymentEntity) (uint, error) {
 
 	cfg := config.InitConfig()
-	response, errMidtrans:=midtran.MitransPayment(cfg)
-	if errMidtrans != nil{
-		return 0,errMidtrans
+	response, errMidtrans := midtran.MitransPayment(cfg)
+	if errMidtrans != nil {
+		return 0, errMidtrans
 	}
 
-	midtrans :=PaymentMidstransToModel(response)
+	midtrans := PaymentMidstransToModel(response)
 
 	paymentModel := models.PaymentEntityToModel(payment)
 	paymentCreateOpr := pq.db.Create(&paymentModel)

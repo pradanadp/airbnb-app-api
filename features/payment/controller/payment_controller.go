@@ -11,7 +11,7 @@ type paymentController struct {
 }
 
 func (handler *paymentController) AddUser(c echo.Context) error {
-
+	return nil
 }
 
 func New(service paymentInterface.PaymentService) *paymentController {

@@ -15,28 +15,28 @@ type UserData struct {
 }
 
 // Upgrade implements user.UserDataInterface
-func (repo *UserData) Upgrade(input features.UserEntity, id uint) (error) {
+func (repo *UserData) Upgrade(input features.UserEntity, id uint) error {
 	var user features.User
 	tx := repo.db.Where("id = ?", id).First(&user)
 	if tx.Error != nil {
 		return tx.Error
 	}
 
-	updatedUser := features.UserEntityToModel(input)
-	if updatedUser.NamaPemilik == "" && updatedUser.KTPFile == "" && updatedUser.NIBFile==""{
-		return errors.New("data tidak boleh kosong")
+	upgradedUser := features.UserEntityToModel(input)
+	if upgradedUser.Owner == "" && upgradedUser.HostDocument == "" {
+		return errors.New("data cannot be empty")
 	}
-	updatedUser.Role = "hoster"
-	updateOpr := repo.db.Model(&user).Updates(updatedUser)
+	upgradedUser.Role = "hoster"
+	updateOpr := repo.db.Model(&user).Updates(upgradedUser)
 	if updateOpr.Error != nil {
-		return errors.New(updateOpr.Error.Error() + ", failed to update user")
+		return errors.New(updateOpr.Error.Error() + ", failed to upgrade user")
 	}
 
 	return nil
 }
 
 // Update implements user.UserDataInterface
-func (repo *UserData) Update(input features.UserEntity, id uint) (error) {
+func (repo *UserData) Update(input features.UserEntity, id uint) error {
 	var user features.User
 	tx := repo.db.Where("id = ?", id).First(&user)
 	if tx.Error != nil {
@@ -85,10 +85,10 @@ func (repo *UserData) Select(id int) (features.UserEntity, error) {
 }
 
 // Insert implements user.UserDataInterface
-func (repo *UserData) Insert(input features.UserEntity) (uint,error) {
+func (repo *UserData) Insert(input features.UserEntity) (uint, error) {
 	hashPassword, err := utils.HashPasword(input.Password)
 	if err != nil {
-		return 0,errors.New("error hashing password: " + err.Error())
+		return 0, errors.New("error hashing password: " + err.Error())
 	}
 	input.Password = hashPassword
 	userData := features.UserEntityToModel(input)
@@ -99,22 +99,22 @@ func (repo *UserData) Insert(input features.UserEntity) (uint,error) {
 
 		tx := repo.db.Create(&userData)
 		if tx.Error != nil {
-			return 0,tx.Error
+			return 0, tx.Error
 		} else if tx.RowsAffected == 0 {
-			return 0,errors.New("insert data user failed, rows affected 0 ")
+			return 0, errors.New("insert data user failed, rows affected 0 ")
 		}
 		id := userData.ID
-		return id,nil
+		return id, nil
 	}
 
 	tx := repo.db.Create(&userData)
 	if tx.Error != nil {
-		return 0,tx.Error
+		return 0, tx.Error
 	} else if tx.RowsAffected == 0 {
-		return 0,errors.New("insert data user failed, rows affected 0 ")
+		return 0, errors.New("insert data user failed, rows affected 0 ")
 	}
 	id := userData.ID
-	return id,nil
+	return id, nil
 }
 
 // Login implements user.UserDataInterface
