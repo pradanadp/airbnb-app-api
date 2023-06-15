@@ -41,7 +41,7 @@ func (iq *imageQuery) Insert(image models.ImageEntity) (uint, error) {
 // Select implements image.ImageRepository.
 func (iq *imageQuery) SelectAll(homestayID uint) ([]models.ImageEntity, error) {
 	var images []models.Image
-	queryResult := iq.db.Preload("Users").Where("homestay_id = ?", homestayID).Find(&images)
+	queryResult := iq.db.Preload("Homestay").Where("homestay_id = ?", homestayID).Find(&images)
 	if queryResult.Error != nil {
 		return []models.ImageEntity{}, queryResult.Error
 	}

@@ -33,6 +33,7 @@ func (awsSvc AWSService) UploadFile(key string, file multipart.File) error {
 
 	return err
 }
+
 func ConfigS3(cfg *appConfig.AppConfig) AWSService {
 	creds := credentials.NewStaticCredentialsProvider(
 		cfg.AWS_ACCESS_KEY_ID, cfg.AWS_SECRET_ACCESS_KEY, "",

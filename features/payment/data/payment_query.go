@@ -31,6 +31,7 @@ func (pq *paymentQuery) Delete(paymentID uint) error {
 // Insert implements payment.PaymentRepository.
 func (pq *paymentQuery) Insert(payment models.ResponMidtrans, BookingID uint) (uint, error) {
 
+
 	var order features.Booking
 
 	errFound :=pq.db.First(order, BookingID)
@@ -58,6 +59,7 @@ func (pq *paymentQuery) Insert(payment models.ResponMidtrans, BookingID uint) (u
         return 0, errMidtrans
     }
     fmt.Println("response:", response)
+
 
     var midtransResp models.ResponMidtrans
     errMarshal := json.Unmarshal(response, &midtransResp)

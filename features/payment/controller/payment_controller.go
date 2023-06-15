@@ -34,6 +34,7 @@ func (handler *paymentController) AddPayment(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, utils.SuccessResponse("review add successfully", id))
+
 }
 
 func New(service paymentInterface.PaymentService) *paymentController {

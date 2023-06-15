@@ -43,12 +43,14 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 
 	homestaysGroup := e.Group("/homestays")
 	{
-		homestaysGroup.POST("", homestayControllerAPI.CreateHomestay)
+		homestaysGroup.POST("", homestayControllerAPI.CreateHomestay, middlewares.JWTMiddleware())
 		homestaysGroup.GET("", homestayControllerAPI.ReadAllHomestay)
 		homestaysGroup.GET("/:homestay_id", homestayControllerAPI.ReadHomestay)
 		homestaysGroup.PUT("/:homestay_id", homestayControllerAPI.UpdateHomestay)
 		homestaysGroup.DELETE("/:homestay_id", homestayControllerAPI.DeleteHomestay)
 		homestaysGroup.POST("/:homestay_id/images", imageControllerAPI.UploadHomestayPhotos)
+		homestaysGroup.POST("/:homestay_id/images/local", imageControllerAPI.UploadHomestayPhotosLocal)
+		homestaysGroup.DELETE("/:homestay_id/images/:image_id", imageControllerAPI.DeleteImage)
 	}
 
 	// Booking router
@@ -72,14 +74,16 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	e.DELETE("/users", UserController.DeleteUser, middlewares.JWTMiddleware())
 	e.PUT("/users", UserController.UpdateUser, middlewares.JWTMiddleware())
 	e.PUT("/upgrades", UserController.UpgradeUser, middlewares.JWTMiddleware())
+	e.POST("/users/profile-picture", UserController.UploadProfilePicture, middlewares.JWTMiddleware())
+	e.POST("/users/host-doc", UserController.UploadHostDoc, middlewares.JWTMiddleware())
 
 	//review Router
 	ReviewData := reviewData.New(db)
 	reviewService := reviewService.New(ReviewData)
 	ReviewController := reviewController.New(reviewService)
 
-	e.POST("/reviews", ReviewController.AddReview,middlewares.JWTMiddleware())
-	e.DELETE("/reviews/:review_id", ReviewController.DeleteReview,middlewares.JWTMiddleware())
+	e.POST("/reviews", ReviewController.AddReview, middlewares.JWTMiddleware())
+	e.DELETE("/reviews/:review_id", ReviewController.DeleteReview, middlewares.JWTMiddleware())
 	e.GET("/homestays/:homestay_id/reviews", ReviewController.GetAllReview)
 
 	PaymentData := paymentData.New(db)
