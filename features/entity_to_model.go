@@ -67,5 +67,7 @@ func PaymentEntityToModel(payment PaymentEntity) Payment {
 		BookingID: payment.BookingID,
 		Name:      payment.Name,
 		Status:    payment.Status,
+		OrderID:   payment.OrderID,
+		VANumber:  payment.VANumber,
 	}
 }

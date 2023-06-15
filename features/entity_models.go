@@ -96,6 +96,8 @@ type PaymentEntity struct {
 	Booking   BookingEntity `json:"booking,omitempty"`
 	Name      string        `json:"payment_name,omitempty" form:"payment_name"`
 	Status    string        `json:"payment_status,omitempty" form:"payment_status"`
+	OrderID	  string		`json:"order_id,omitempty" form:"order_id"`
+	VANumber  string		`json:"virtual_number,omitempty" form:"virtual_number"`
 	CreatedAt time.Time     `json:"created_at,omitempty"`
 	UpdatedAt time.Time     `json:"updated_at,omitempty"`
 	DeletedAt time.Time     `json:"deleted_at,omitempty"`
@@ -105,3 +107,26 @@ type LoginUser struct {
 	Email    string `json:"email,omitempty" form:"email" validate:"required,email"`
 	Password string `json:"password,omitempty" form:"password" validate:"required"`
 }
+
+
+type ResponMidtrans struct {
+	VANumber 				string `json:"va_number"`
+	Bank 	 				string `json:"bank"`
+	TransactionTime 		string `json:"transaction_time"`
+	TransactionStatus 		string `json:"transaction_status"`
+	TransactionId 			string `json:"transaction_id"`
+	StatusMessage 			string `json:"status_message"`
+	StatusCode 				string `json:"status_code"`
+	SignatureKey 			string `json:"signature_key"`
+	SettlementTime 			string `json:"settlement_time"`
+	PaymentType 			string `json:"payment_type"`
+	PaymentAmounts 			string `json:"payment_amounts"`
+	OrderId 				string  `json:"order_id"`
+	MerchantId 				string `json:"merchant_id"`
+	GroosAmount 			string `json:"gross_amount"`
+	FraudStatus 			string `json:"fraud_status"`
+	Currency 				string `json:"currency"`
+}
+
+
+

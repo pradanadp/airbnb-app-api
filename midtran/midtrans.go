@@ -1,9 +1,10 @@
 package midtran
 
 import (
-	appConfig "be-api/app/config"
+
 	// "be-api/features"
-	paymentInterface "be-api/features/payment"
+
+	"be-api/app/config"
 	"bytes"
 	"encoding/base64"
 	"fmt"
@@ -12,8 +13,9 @@ import (
 	"github.com/midtrans/midtrans-go"
 )
 
-func MitransPayment(cfg *appConfig.AppConfig) ([]byte,error){
 
+func ChargeTransaction(payload []byte) ([]byte,error){
+	cfg := config.InitConfig()
 	midtrans.ServerKey = cfg.KEY_SERVER_MIDTRANS
 	authString := encodeAuthString(midtrans.ServerKey, "")
 	fmt.Println("AUTH_STRING:", authString)
@@ -26,40 +28,10 @@ func MitransPayment(cfg *appConfig.AppConfig) ([]byte,error){
 		"Authorization": authString,
 		"Content-Type":  "application/json",
 	}
-	// var order features.Booking
 
-	// payload := map[string]interface{}{
-	// 	"payment_type": "bank_transfer",
-	// 	"transaction_details": map[string]interface{}{
-	// 		// "order_id": order.OrderID,
-	// 		// "gross_amount": order.TotalPrice,
-	// 	},
-	// 	"bank_transfer": map[string]interface{}{
-	// 		"bank": "bca",
-	// 	},
-	// }
-
-	payload := []byte(`{
-		"payment_type": "bank_transfer",
-		"transaction_details": {
-			"order_id": "order-6171",
-			"gross_amount": 44000
-		},
-		"bank_transfer": {
-			"bank": "bca"
-		}
-	}`)
-	
-	// payloadJSON, err := json.Marshal(payload)
-	// if err != nil {
-		
-	// 	return nil,err
-	// }
-
-	response, err := sendRequest(url, "POST", headers, payload)
-	if err != nil {
-		
-		return nil, err
+	response, errRequest := sendRequest(url, "POST", headers, payload)
+	if errRequest != nil {	
+		return nil, errRequest
 	}
 	return response,nil
 }
@@ -97,14 +69,4 @@ func encodeAuthString(username, password string) string {
 	authBytes := []byte(auth)
 	encodedAuth := base64.StdEncoding.EncodeToString(authBytes)
 	return encodedAuth
-}
-
-type paymentController struct {
-	paymentService paymentInterface.PaymentService
-}
-
-func New(service paymentInterface.PaymentService) *paymentController {
-	return &paymentController{
-		paymentService: service,
-	}
 }

@@ -1,11 +1,15 @@
 package data
 
 import (
-	"be-api/app/config"
+	"be-api/features"
 	models "be-api/features"
 	paymentInterface "be-api/features/payment"
+	"be-api/features/payment/controller"
 	"be-api/midtran"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -25,23 +29,61 @@ func (pq *paymentQuery) Delete(paymentID uint) error {
 }
 
 // Insert implements payment.PaymentRepository.
-func (pq *paymentQuery) Insert(payment models.PaymentEntity) (uint, error) {
+func (pq *paymentQuery) Insert(payment models.ResponMidtrans, BookingID uint) (uint, error) {
 
-	cfg := config.InitConfig()
-	response, errMidtrans := midtran.MitransPayment(cfg)
-	if errMidtrans != nil {
-		return 0, errMidtrans
+
+	var order features.Booking
+
+	errFound :=pq.db.First(order, BookingID)
+	if errFound != nil{
+		return 0,errFound.Error
+	}
+	payload := map[string]interface{}{
+		"payment_type": "bank_transfer",
+		"transaction_details": map[string]interface{}{
+			"order_id": order.OrderID,
+			"gross_amount": order.TotalPrice,
+		},
+		"bank_transfer": map[string]interface{}{
+			"bank": "bca",
+		},
+	}
+	payloadJSON, err := json.Marshal(payload)
+	if err != nil {
+		
+		return 0,err
 	}
 
-	midtrans := PaymentMidstransToModel(response)
+    response, errMidtrans := midtran.ChargeTransaction(payloadJSON)
+    if errMidtrans != nil {
+        return 0, errMidtrans
+    }
+    fmt.Println("response:", response)
 
-	paymentModel := models.PaymentEntityToModel(payment)
-	paymentCreateOpr := pq.db.Create(&paymentModel)
-	if paymentCreateOpr.Error != nil {
-		return 0, paymentCreateOpr.Error
-	}
 
-	return paymentModel.ID, nil
+    var midtransResp models.ResponMidtrans
+    errMarshal := json.Unmarshal(response, &midtransResp)
+    if errMarshal != nil {
+		log.Printf("Error sending request: %s", errMarshal.Error())
+        return 0, errMarshal
+    }
+	fmt.Println("responseMashal:", midtransResp)
+
+    midtrans := controller.PaymentMidstransToModel(midtransResp)
+	midtrans.BookingID = 6
+    errCreate := pq.db.Create(&midtrans)
+    if errCreate != nil {
+        return 0, errCreate.Error
+    }
+
+	fmt.Println("data status:",midtrans.Status)
+	fmt.Println("data order:",midtrans.OrderID)
+	fmt.Println("data kartu:",midtrans.VANumber)
+
+    dataRespons := features.PaymentModelToEntity(midtrans)
+    fmt.Println("dataRespons.ID:", dataRespons.ID)
+    return dataRespons.ID, nil
+
 }
 
 func New(db *gorm.DB) paymentInterface.PaymentRepository {

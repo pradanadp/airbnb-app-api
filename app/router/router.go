@@ -9,6 +9,7 @@ import (
 	homestayControllerInit "be-api/features/homestay/controller"
 	homestayRepoInit "be-api/features/homestay/data"
 	homestayServiceInit "be-api/features/homestay/service"
+
 	imageControllerInit "be-api/features/image/controller"
 	imageRepoInit "be-api/features/image/data"
 	imageServiceInit "be-api/features/image/service"
@@ -20,6 +21,10 @@ import (
 	reviewController "be-api/features/review/controller"
 	reviewData "be-api/features/review/data"
 	reviewService "be-api/features/review/service"
+
+	paymentController "be-api/features/payment/controller"
+	paymentData "be-api/features/payment/data"
+	paymentService "be-api/features/payment/service"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -80,4 +85,10 @@ func InitRouter(db *gorm.DB, e *echo.Echo) {
 	e.POST("/reviews", ReviewController.AddReview, middlewares.JWTMiddleware())
 	e.DELETE("/reviews/:review_id", ReviewController.DeleteReview, middlewares.JWTMiddleware())
 	e.GET("/homestays/:homestay_id/reviews", ReviewController.GetAllReview)
+
+	PaymentData := paymentData.New(db)
+	PaymentService := paymentService.New(PaymentData)
+	PaymentController := paymentController.New(PaymentService)
+
+	e.POST("/payments/:booking_id", PaymentController.AddPayment)
 }
