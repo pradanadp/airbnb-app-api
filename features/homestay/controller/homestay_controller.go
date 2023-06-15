@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"be-api/app/middlewares"
 	models "be-api/features"
 	homestayInterface "be-api/features/homestay"
 	"be-api/utils"
@@ -22,7 +23,9 @@ func New(service homestayInterface.HomestayService) *homestayController {
 }
 
 func (hc *homestayController) CreateHomestay(c echo.Context) error {
+	hostID := middlewares.ExtractTokenUserId(c)
 	var homestay models.HomestayEntity
+	homestay.HostID = uint(hostID)
 
 	err := c.Bind(&homestay)
 	if err != nil {
@@ -69,7 +72,7 @@ func (hc *homestayController) ReadAllHomestay(c echo.Context) error {
 
 	var homestayResponses []HomestayResponse
 	for _, homestay := range homestays {
-		homestayResponses = append(homestayResponses, HomestayEntityToResponse(homestay))
+		homestayResponses = append(homestayResponses, ReadAllHomestayEntityToResponse(homestay))
 	}
 
 	return c.JSON(http.StatusOK, utils.SuccessResponse("homestays retrieved successfully", homestayResponses))

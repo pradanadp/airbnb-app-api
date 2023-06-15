@@ -15,6 +15,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+const (
+	MaxFileSize = 1 << 20 // 1 MB
+)
+
 type imageController struct {
 	imageService imageInterface.ImageService
 }
@@ -40,6 +44,11 @@ func (ic *imageController) UploadHomestayPhotos(c echo.Context) error {
 
 	files := form.File["files"]
 	for _, file := range files {
+		fileSize := file.Size
+		if fileSize > MaxFileSize {
+			return c.JSON(http.StatusBadRequest, utils.FailResponse("File size exceeds the limit of 1 MB", nil))
+		}
+
 		path := "homestay-photos/" + file.Filename
 		src, err := file.Open()
 		if err != nil {
@@ -84,6 +93,11 @@ func (ic *imageController) UploadHomestayPhotosLocal(c echo.Context) error {
 
 	files := form.File["files"]
 	for _, file := range files {
+		fileSize := file.Size
+		if fileSize > MaxFileSize {
+			return c.JSON(http.StatusBadRequest, utils.FailResponse("File size exceeds the limit of 1 MB", nil))
+		}
+
 		src, err := file.Open()
 		if err != nil {
 			return err
@@ -123,4 +137,35 @@ func (ic *imageController) UploadHomestayPhotosLocal(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "success upload files",
 	})
+}
+
+func (ic *imageController) DeleteImage(c echo.Context) error {
+	homestayID, err := strconv.Atoi(c.Param("homestay_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("invalid homestay ID", nil))
+	}
+
+	imageID, err := strconv.Atoi(c.Param("image_id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("invalid image ID", nil))
+	}
+
+	// Delete image
+	err = ic.imageService.DeleteImage(uint(imageID))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse(err.Error(), nil))
+	}
+
+	// Get All images
+	images, err := ic.imageService.GetImage(uint(homestayID))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("images not found", nil))
+	}
+
+	var imageEntities []ImageResponse
+	for _, image := range images {
+		imageEntities = append(imageEntities, ImageEntityToResponse(image))
+	}
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("images retrieved successfully", imageEntities))
 }

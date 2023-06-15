@@ -19,8 +19,9 @@ type HomestayResponse struct {
 }
 
 type ReviewResponse struct {
-	Reviews string  `json:"reviews,omitempty"`
-	Ratings float64 `json:"ratings,omitempty"`
+	CustomerID uint    `json:"customer_id,omitempty"`
+	Reviews    string  `json:"reviews,omitempty"`
+	Ratings    float64 `json:"ratings,omitempty"`
 }
 
 type ImageResponse struct {
@@ -52,10 +53,30 @@ func HomestayEntityToResponse(homestay models.HomestayEntity) HomestayResponse {
 	}
 }
 
+func ReadAllHomestayEntityToResponse(homestay models.HomestayEntity) HomestayResponse {
+	var imageLinks []ImageResponse
+	for _, link := range homestay.Images {
+		imageLinks = append(imageLinks, ImageEntityToResponse(link))
+	}
+
+	return HomestayResponse{
+		ID:          homestay.ID,
+		HostID:      homestay.HostID,
+		Title:       homestay.Title,
+		Description: homestay.Description,
+		Location:    homestay.Location,
+		Price:       homestay.Price,
+		Facilities:  homestay.Facilities,
+		Rating:      homestay.Rating,
+		Images:      imageLinks,
+	}
+}
+
 func ReviewEntityToResponse(review models.ReviewEntity) ReviewResponse {
 	return ReviewResponse{
-		Reviews: review.Reviews,
-		Ratings: review.Ratings,
+		CustomerID: review.CustomerID,
+		Reviews:    review.Reviews,
+		Ratings:    review.Ratings,
 	}
 }
 
