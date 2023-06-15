@@ -252,7 +252,7 @@ func (handler *UserController) UploadHostDoc(c echo.Context) error {
 	}
 
 	var updatedUser features.UserEntity
-	updatedUser.ProfilePicture = fmt.Sprintf("https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/host-doc/%s", filepath.Base(file.Filename))
+	updatedUser.HostDocument = fmt.Sprintf("https://aws-airbnb-api.s3.ap-southeast-2.amazonaws.com/host-doc/%s", filepath.Base(file.Filename))
 
 	errUpdate := handler.userService.Update(updatedUser, uint(id))
 	if errUpdate != nil {

@@ -78,17 +78,21 @@ func (hc *homestayController) ReadAllHomestay(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.SuccessResponse("homestays retrieved successfully", homestayResponses))
 }
 
-func (hc *homestayController) UpdateHomestay(c echo.Context) error {
-	var updatedHomestay models.HomestayEntity
-	err := c.Bind(&updatedHomestay)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, utils.FailResponse("failed to bind homestay data", nil))
-	}
+func (hc *homestayController) ReadAllHomestayByUserID(c echo.Context) error {
+	return nil
+}
 
+func (hc *homestayController) UpdateHomestay(c echo.Context) error {
 	idParam := c.Param("homestay_id")
 	homestayID, err := strconv.Atoi(idParam)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("invalid homestay ID", nil))
+	}
+
+	var updatedHomestay models.HomestayEntity
+	err = c.Bind(&updatedHomestay)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse("failed to bind homestay data", nil))
 	}
 
 	err = hc.homestayService.UpdatedHomestay(uint(homestayID), updatedHomestay)
@@ -107,13 +111,15 @@ func (hc *homestayController) UpdateHomestay(c echo.Context) error {
 }
 
 func (hc *homestayController) DeleteHomestay(c echo.Context) error {
+	var homestay models.HomestayEntity
+
 	idParam := c.Param("homestay_id")
 	homestayID, err := strconv.Atoi(idParam)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("invalid homestay ID", nil))
 	}
 
-	homestay, err := hc.homestayService.GetHomestay(uint(homestayID))
+	homestay, err = hc.homestayService.GetHomestay(uint(homestayID))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse("homestay not found", nil))
 	}
