@@ -78,8 +78,19 @@ func (hc *homestayController) ReadAllHomestay(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.SuccessResponse("homestays retrieved successfully", homestayResponses))
 }
 
-func (hc *homestayController) ReadAllHomestayByUserID(c echo.Context) error {
-	return nil
+func (hc *homestayController) ReadAllHomestayByHostID(c echo.Context) error {
+	hostID := middlewares.ExtractTokenUserId(c)
+	homestays, err := hc.homestayService.GetAllHomestayByHostID(uint(hostID))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, utils.FailResponse("homestays not found", nil))
+	}
+
+	var homestayResponses []HomestayResponse
+	for _, homestay := range homestays {
+		homestayResponses = append(homestayResponses, ReadAllHomestayByHostIDEntityToResponse(homestay))
+	}
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("homestays retrieved successfully", homestayResponses))
 }
 
 func (hc *homestayController) UpdateHomestay(c echo.Context) error {
