@@ -6,13 +6,13 @@ import (
 )
 
 type PaymentRepository interface {
-	Insert(payment models.ResponMidtrans,id uint,booking_id uint) (features.PaymentEntity, error)
+	Insert(payment models.ResponMidtrans,booking_id uint) (uint, error)
 	Delete(paymentID uint) error
-	Select(UserId uint) (features.PaymentEntity, error)
+	Select(id uint) (features.PaymentEntity, error)
 }
 
 type PaymentService interface {
-	CreatePayment(payment models.ResponMidtrans, id uint,booking_id uint) (features.PaymentEntity, error)
+	CreatePayment(payment models.ResponMidtrans, booking_id uint) (uint, error)
 	DeletePayment(paymentID uint) error
-	GetPayment(UserId uint) (features.PaymentEntity, error)
+	GetPayment(id uint) (features.PaymentEntity, error)
 }

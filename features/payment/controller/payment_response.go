@@ -12,3 +12,12 @@ func PaymentMidstransToModel(payment models.ResponMidtrans) models.Payment {
 		VANumber:   payment.VANumber,
 	}
 }
+
+func PaymentEntityToMidstrans(payment models.PaymentEntity) models.ResponMidtrans {
+	return models.ResponMidtrans{
+		Bank:   			payment.Name,
+		TransactionStatus: 	payment.Status,
+		OrderId:    		payment.OrderID,
+		VANumber:   		payment.VANumber,
+	}
+}
