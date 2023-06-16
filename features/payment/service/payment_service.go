@@ -12,8 +12,8 @@ type paymentService struct {
 }
 
 // GetPayment implements payment.PaymentService
-func (ps *paymentService) GetPayment(UserId uint) (features.PaymentEntity,error) {
-	data,err:=ps.paymentRepository.Select(UserId)
+func (ps *paymentService) GetPayment(id uint) (features.PaymentEntity,error) {
+	data,err:=ps.paymentRepository.Select(id)
 	if err != nil {
 		return features.PaymentEntity{}, fmt.Errorf("error: %v", err)
 	}
@@ -23,10 +23,10 @@ func (ps *paymentService) GetPayment(UserId uint) (features.PaymentEntity,error)
 }
 
 // CreatePayment implements payment.PaymentService.
-func (ps *paymentService) CreatePayment(payment models.ResponMidtrans, id uint,booking_id uint) (features.PaymentEntity, error) {
-	Orderid, err := ps.paymentRepository.Insert(payment,id,booking_id)
+func (ps *paymentService) CreatePayment(payment models.ResponMidtrans, booking_id uint) (uint, error) {
+	Orderid, err := ps.paymentRepository.Insert(payment,booking_id)
 	if err != nil {
-		return features.PaymentEntity{}, fmt.Errorf("error: %v", err)
+		return 0, fmt.Errorf("error: %v", err)
 	}
 
 	return Orderid, nil

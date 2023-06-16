@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"be-api/app/middlewares"
 	"be-api/features"
 	paymentInterface "be-api/features/payment"
 	"be-api/utils"
@@ -17,7 +16,6 @@ type paymentController struct {
 }
 
 func (handler *paymentController) AddPayment(c echo.Context) error {
-	id := middlewares.ExtractTokenUserId(c)
 
 	IdBooking := c.Param("booking_id")
 	idConv, errConv := strconv.Atoi(IdBooking)
@@ -37,12 +35,21 @@ func (handler *paymentController) AddPayment(c echo.Context) error {
 		}
 	}
 
-	idOrder, errCreate := handler.paymentService.CreatePayment(payment,uint(id),uint(idConv))
+	idOrder, errCreate := handler.paymentService.CreatePayment(payment,uint(idConv))
 	if errCreate != nil {
 		return c.JSON(http.StatusBadRequest, utils.FailResponse(errCreate.Error(), nil))
 	}
 
-	return c.JSON(http.StatusOK, utils.SuccessResponse("payment add successfully", idOrder))
+	data,errGet:=handler.paymentService.GetPayment(idOrder)
+	if errGet != nil {
+		return c.JSON(http.StatusBadRequest, utils.FailResponse(errGet.Error(), nil))
+	}
+
+	dataResult := PaymentEntityToMidstrans(data)
+
+
+
+	return c.JSON(http.StatusOK, utils.SuccessResponse("payment add successfully", dataResult))
 
 }
 

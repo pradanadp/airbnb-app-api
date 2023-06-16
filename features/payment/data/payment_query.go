@@ -22,16 +22,10 @@ type paymentQuery struct {
 }
 
 // Select implements payment.PaymentRepository
-func (pq *paymentQuery) Select(UserId uint) (features.PaymentEntity, error) {
-	var booking models.Booking
-
-	queryBooking := pq.db.Where("customer_id = ?", UserId).First(&booking)
-	if queryBooking.Error != nil {
-		return features.PaymentEntity{}, queryBooking.Error
-	}
-	
+func (pq *paymentQuery) Select(id uint) (features.PaymentEntity, error) {
 	var payment models.Payment
-	queryPayment := pq.db.Preload("Bookings").Where("booking_id = ?", booking.ID).First(&payment)
+
+	queryPayment := pq.db.Where("id = ?", id).First(&payment)
 	if queryPayment.Error != nil {
 		return features.PaymentEntity{}, queryPayment.Error
 	}
@@ -51,12 +45,12 @@ func (pq *paymentQuery) Delete(paymentID uint) error {
 	return nil
 }
 
-func (pq *paymentQuery) Insert(payment models.ResponMidtrans,UserId uint,booking_id uint) (features.PaymentEntity, error) {
+func (pq *paymentQuery) Insert(payment models.ResponMidtrans,booking_id uint) (uint, error) {
 	
     var booking models.Booking
     query := pq.db.Where("id = ?",booking_id).Last(&booking)
     if query.Error != nil {
-        return models.PaymentEntity{}, query.Error
+        return 0, query.Error
     }
 
 
@@ -89,12 +83,10 @@ func (pq *paymentQuery) Insert(payment models.ResponMidtrans,UserId uint,booking
 	result.Name ="bca"
 	errCreate := pq.db.Create(&result)
 	if errCreate != nil {
-		return features.PaymentEntity{}, errCreate.Error
+		return 0, errCreate.Error
 	}
 
-	data := features.PaymentModelToEntity(result)
-
-	return data, nil
+	return result.ID, nil
 
 }
 
